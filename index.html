@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wedding Master Planner - Detailed Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-database-compat.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
+        .step-card { border-left: 4px solid #e2e8f0; padding-left: 1.5rem; position: relative; padding-bottom: 2rem; }
+        .step-card:last-child { border-left: 4px solid transparent; }
+        .step-number { position: absolute; left: -14px; top: 0; width: 24px; height: 24px; background: #6366f1; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+        .tab-active { border-bottom: 3px solid #6366f1; color: #6366f1; }
+        .timeline-sub-item { position: relative; padding-left: 1rem; margin-top: 0.5rem; color: #475569; font-size: 0.875rem; }
+        .timeline-sub-item::before { content: "•"; position: absolute; left: 0; color: #6366f1; font-weight: bold; }
+    </style>
+</head>
+<body class="p-4 md:p-8 text-slate-800">
+
+    <div class="max-w-6xl mx-auto">
+        <header class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
+            <div class="text-center md:text-left">
+                <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight">The Wedding Master ✨</h1>
+                <p class="text-slate-500 mt-1">Detail Timeline & Manajemen Firebase</p>
+            </div>
+            <div class="bg-indigo-600 px-6 py-4 rounded-2xl text-white shadow-xl flex gap-8">
+                <div>
+                    <p class="text-[10px] uppercase opacity-70 font-bold">Total Budget</p>
+                    <h2 id="grandTotal" class="text-xl font-bold">Rp 0</h2>
+                </div>
+                <div class="border-l border-indigo-400 pl-8">
+                    <p class="text-[10px] uppercase opacity-70 font-bold">Tagihan Vendor</p>
+                    <h2 id="remainingDebt" class="text-xl font-bold">Rp 0</h2>
+                </div>
+            </div>
+        </header>
+
+        <nav class="flex gap-6 mb-8 border-b border-slate-200 px-2 overflow-x-auto whitespace-nowrap scrollbar-hide">
+            <button onclick="switchTab('panduan')" id="tab-panduan" class="pb-4 font-bold text-slate-400 transition-all tab-active">Timeline Rinci</button>
+            <button onclick="switchTab('berkas')" id="tab-berkas" class="pb-4 font-bold text-slate-400 transition-all">Administrasi</button>
+            <button onclick="switchTab('seserahan')" id="tab-seserahan" class="pb-4 font-bold text-slate-400 transition-all">Seserahan</button>
+            <button onclick="switchTab('prabotan')" id="tab-prabotan" class="pb-4 font-bold text-slate-400 transition-all">Prabotan Rumah</button>
+            <button onclick="switchTab('vendor')" id="tab-vendor" class="pb-4 font-bold text-slate-400 transition-all">Vendor (MoU)</button>
+        </nav>
+
+        <div id="content-panduan" class="tab-content">
+            <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+                <h2 class="text-2xl font-black mb-8 text-indigo-900 italic uppercase tracking-wider">Master Checklist & Timeline</h2>
+                
+                <div class="space-y-2">
+                    <div class="step-card">
+                        <div class="step-number">1</div>
+                        <h4 class="font-bold text-lg text-indigo-600">Fase 1: Persiapan Dasar (H-12 s/d H-9 Bulan)</h4>
+                        <div class="grid md:grid-cols-2 gap-4 mt-3">
+                            <div class="timeline-sub-item"><b>Pertemuan Keluarga:</b> Perkenalan antar keluarga besar dan penentuan tanggal/bulan baik.</div>
+                            <div class="timeline-sub-item"><b>Penentuan Anggaran:</b> Diskusi jujur mengenai siapa yang membayar apa dan batas maksimal pengeluaran.</div>
+                            <div class="timeline-sub-item"><b>Pencarian Venue:</b> Survey lokasi (Gedung/Hotel/Rumah) dan DP tempat secepatnya karena tanggal favorit cepat habis.</div>
+                            <div class="timeline-sub-item"><b>Konsep Besar:</b> Menentukan tema warna, adat yang dipakai, dan jumlah undangan (Guest List awal).</div>
+                        </div>
+                    </div>
+
+                    <div class="step-card">
+                        <div class="step-number">2</div>
+                        <h4 class="font-bold text-lg text-indigo-600">Fase 2: Pemilihan Vendor Utama (H-8 s/d H-6 Bulan)</h4>
+                        <div class="grid md:grid-cols-2 gap-4 mt-3">
+                            <div class="timeline-sub-item"><b>Catering & Food Testing:</b> Mencoba beberapa vendor catering dan mengunci paket menu.</div>
+                            <div class="timeline-sub-item"><b>MUA & Attire:</b> Booking perias pengantin dan mulai mencari inspirasi kebaya/jas.</div>
+                            <div class="timeline-sub-item"><b>Dokumentasi:</b> Pilih fotografer & videografer yang sesuai dengan style yang diinginkan.</div>
+                            <div class="timeline-sub-item"><b>Dekorasi & Entertainment:</b> Konsultasi layout pelaminan dan daftar lagu (band/akustik).</div>
+                        </div>
+                    </div>
+
+                    <div class="step-card">
+                        <div class="step-number">3</div>
+                        <h4 class="font-bold text-lg text-indigo-600">Fase 3: Administrasi & Logistik (H-5 s/d H-3 Bulan)</h4>
+                        <div class="grid md:grid-cols-2 gap-4 mt-3">
+                            <div class="timeline-sub-item"><b>Checklist Seserahan:</b> Mulai membeli barang cicilan seserahan (Gunakan Tab Seserahan).</div>
+                            <div class="timeline-sub-item"><b>Cek Kesehatan:</b> Suntik TT di Puskesmas dan tes kesehatan pra-nikah (Elsimil).</div>
+                            <div class="timeline-sub-item"><b>Pemesanan Undangan:</b> Desain undangan digital/fisik dan pesan souvenir sesuai jumlah tamu.</div>
+                            <div class="timeline-sub-item"><b>Seragam Keluarga:</b> Pembelian bahan dan distribusi ke keluarga besar/bridesmaid.</div>
+                        </div>
+                    </div>
+
+                    <div class="step-card">
+                        <div class="step-number">4</div>
+                        <h4 class="font-bold text-lg text-indigo-600">Fase 4: Finalisasi (H-2 Bulan s/d H-1 Bulan)</h4>
+                        <div class="grid md:grid-cols-2 gap-4 mt-3">
+                            <div class="timeline-sub-item"><b>Pendaftaran KUA:</b> Memasukkan berkas lengkap ke KUA setempat (Lihat Tab Administrasi).</div>
+                            <div class="timeline-sub-item"><b>Fitting Terakhir:</b> Pastikan baju pengantin pas dan nyaman.</div>
+                            <div class="timeline-sub-item"><b>Technical Meeting:</b> Mengumpulkan semua vendor di venue untuk koordinasi alur acara.</div>
+                            <div class="timeline-sub-item"><b>Distribusi Undangan:</b> Mulai menyebarkan undangan fisik dan digital secara bertahap.</div>
+                        </div>
+                    </div>
+
+                    <div class="step-card">
+                        <div class="step-number">5</div>
+                        <h4 class="font-bold text-lg text-emerald-600">Minggu Terakhir & Hari H</h4>
+                        <div class="grid md:grid-cols-2 gap-4 mt-3">
+                            <div class="timeline-sub-item"><b>Pelunasan:</b> Selesaikan semua sisa pembayaran vendor (Cek Dashboard Tagihan).</div>
+                            <div class="timeline-sub-item"><b>Briefing Keluarga:</b> Pastikan penanggung jawab mahar, cincin, dan buku nikah sudah ditunjuk.</div>
+                            <div class="timeline-sub-item"><b>Istirahat Total:</b> Fokus pada mental dan kesehatan fisik 2 hari sebelum acara.</div>
+                            <div class="timeline-sub-item"><b>The Big Day:</b> Nikmati setiap momen, serahkan teknis kepada WO/Panitia Keluarga.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="content-berkas" class="tab-content hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+                    <h3 class="font-bold text-lg mb-4">📁 Checklist Dokumen Wajib</h3>
+                    <ul class="text-sm space-y-2">
+                        <li><input type="checkbox"> Fotokopi KTP & KK (CPP & CPW)</li>
+                        <li><input type="checkbox"> Akta Kelahiran & Ijazah Terakhir</li>
+                        <li><input type="checkbox"> Pas Foto 2x3 & 4x6 (Latar Biru)</li>
+                        <li><input type="checkbox"> Surat Rekomendasi Nikah (Jika Numpang)</li>
+                        <li><input type="checkbox"> Fotokopi KTP Saksi Nikah</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+                    <h3 class="font-bold text-lg mb-4 text-indigo-600">🏢 Alur Kantor Pemerintah</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        1. <b>RT/RW & Kelurahan:</b> Minta pengantar dan buat Form N1, N2, N4.<br><br>
+                        2. <b>Puskesmas:</b> Lakukan pemeriksaan kesehatan dan dapatkan sertifikat layak nikah.<br><br>
+                        3. <b>KUA:</b> Daftarkan diri di KUA kecamatan tempat acara berlangsung.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div id="content-seserahan" class="tab-content hidden">
+            <div class="bg-white p-6 rounded-3xl border border-slate-200">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                    <input id="sNama" type="text" placeholder="Barang..." class="px-4 py-3 border rounded-xl">
+                    <input id="sLink" type="text" placeholder="Link Pembelian" class="px-4 py-3 border rounded-xl">
+                    <input id="sHarga" type="number" placeholder="Harga" class="px-4 py-3 border rounded-xl">
+                    <button onclick="addItem('s')" class="bg-indigo-600 text-white rounded-xl font-bold px-6">Tambah</button>
+                </div>
+                <table class="w-full text-left text-sm"><tbody id="sTable" class="divide-y"></tbody></table>
+            </div>
+        </div>
+
+        <div id="content-prabotan" class="tab-content hidden">
+            <div class="bg-white p-6 rounded-3xl border border-slate-200">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                    <input id="pNama" type="text" placeholder="Nama Prabotan..." class="px-4 py-3 border rounded-xl">
+                    <input id="pLink" type="text" placeholder="Link Pembelian" class="px-4 py-3 border rounded-xl">
+                    <input id="pHarga" type="number" placeholder="Harga" class="px-4 py-3 border rounded-xl">
+                    <button onclick="addItem('p')" class="bg-emerald-600 text-white rounded-xl font-bold px-6">Tambah</button>
+                </div>
+                <table class="w-full text-left text-sm"><tbody id="pTable" class="divide-y"></tbody></table>
+            </div>
+        </div>
+
+        <div id="content-vendor" class="tab-content hidden">
+            <div class="bg-white p-6 rounded-3xl border border-slate-200">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                    <input id="vNama" type="text" placeholder="Nama Vendor" class="border rounded-xl px-4 py-3">
+                    <input id="vLayanan" type="text" placeholder="Layanan" class="border rounded-xl px-4 py-3">
+                    <input id="vTotal" type="number" placeholder="Total" class="border rounded-xl px-4 py-3">
+                    <input id="vDP" type="number" placeholder="DP" class="border rounded-xl px-4 py-3">
+                </div>
+                <button onclick="addVendor()" class="w-full bg-slate-800 text-white py-4 rounded-xl font-bold mb-8">Simpan Kontrak</button>
+                <table class="w-full text-left text-sm"><tbody id="vTable" class="divide-y"></tbody></table>
+            </div>
+        </div>
+
+        <footer class="text-center mt-20 text-slate-400 text-sm italic">
+            &copy; 2026 Wedding Master Planner - Detail Checklist Version.
+        </footer>
+    </div>
+
+    <script>
+        // FIREBASE CONFIGURATION (Tetap gunakan milik Anda)
+        const firebaseConfig = {
+  apiKey: "AIzaSyDwqg-gmE9__3uEejomI19iEAngvhbQRT0",
+  authDomain: "arus-masuk-kas.firebaseapp.com",
+  projectId: "arus-masuk-kas",
+  storageBucket: "arus-masuk-kas.firebasestorage.app",
+  messagingSenderId: "1034948401170",
+  appId: "1:1034948401170:web:01adfae6c89bc38bd160cb",
+  measurementId: "G-R2T0ZNBP7P"
+};
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        function switchTab(t) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+            document.querySelectorAll('nav button').forEach(b => b.classList.remove('tab-active'));
+            document.getElementById('content-' + t).classList.remove('hidden');
+            document.getElementById('tab-' + t).classList.add('tab-active');
+        }
+
+        function formatRp(v) { return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(v); }
+
+        function addItem(type) {
+            const pre = type === 's' ? 's' : 'p';
+            const name = document.getElementById(pre + 'Nama').value;
+            const link = document.getElementById(pre + 'Link').value;
+            const price = parseFloat(document.getElementById(pre + 'Harga').value) || 0;
+            if (name) {
+                db.ref(type === 's' ? 'seserahan' : 'prabotan').push({ name, link, price });
+                document.getElementById(pre + 'Nama').value = ""; document.getElementById(pre + 'Link').value = ""; document.getElementById(pre + 'Harga').value = "";
+            }
+        }
+
+        function addVendor() {
+            const n = document.getElementById('vNama').value;
+            const l = document.getElementById('vLayanan').value;
+            const t = parseFloat(document.getElementById('vTotal').value) || 0;
+            const d = parseFloat(document.getElementById('vDP').value) || 0;
+            if (n) db.ref('vendor').push({ n, l, t, d });
+        }
+
+        function remove(type, id) {
+            const path = type === 's' ? 'seserahan' : type === 'p' ? 'prabotan' : 'vendor';
+            db.ref(path + '/' + id).remove();
+        }
+
+        db.ref().on('value', snapshot => {
+            const data = snapshot.val() || {};
+            const sB = document.getElementById('sTable');
+            const pB = document.getElementById('pTable');
+            const vB = document.getElementById('vTable');
+            sB.innerHTML = ""; pB.innerHTML = ""; vB.innerHTML = "";
+
+            let budget = 0; let hutang = 0;
+
+            if(data.seserahan) Object.keys(data.seserahan).forEach(id => {
+                const i = data.seserahan[id]; budget += i.price;
+                sB.innerHTML += `<tr><td class="py-4 font-bold">${i.name}</td><td><a href="${i.link}" target="_blank" class="text-indigo-600 underline">Link ↗</a></td><td class="text-right">${formatRp(i.price)}</td><td class="text-center"><button onclick="remove('s','${id}')" class="text-red-500 font-bold">Hapus</button></td></tr>`;
+            });
+
+            if(data.prabotan) Object.keys(data.prabotan).forEach(id => {
+                const i = data.prabotan[id]; budget += i.price;
+                pB.innerHTML += `<tr><td class="py-4 font-bold">${i.name}</td><td><a href="${i.link}" target="_blank" class="text-emerald-600 underline">Link ↗</a></td><td class="text-right">${formatRp(i.price)}</td><td class="text-center"><button onclick="remove('p','${id}')" class="text-red-500 font-bold">Hapus</button></td></tr>`;
+            });
+
+            if(data.vendor) Object.keys(data.vendor).forEach(id => {
+                const i = data.vendor[id]; budget += i.t; hutang += (i.t - i.d);
+                vB.innerHTML += `<tr><td class="py-4 font-bold">${i.n} (${i.l})</td><td class="text-right">${formatRp(i.t)}</td><td class="text-right">${formatRp(i.d)}</td><td class="text-right text-red-500 font-bold">${formatRp(i.t-i.d)}</td><td class="text-center"><button onclick="remove('v','${id}')" class="text-red-500 font-bold">Hapus</button></td></tr>`;
+            });
+
+            document.getElementById('grandTotal').innerText = formatRp(budget);
+            document.getElementById('remainingDebt').innerText = formatRp(hutang);
+        });
+    </script>
+</body>
+</html>
