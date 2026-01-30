@@ -3,251 +3,374 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wedding Master Planner - Detailed Edition</title>
+    <title>Wedding Planner Pro - Detail Rencana</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-database-compat.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
-        .step-card { border-left: 4px solid #e2e8f0; padding-left: 1.5rem; position: relative; padding-bottom: 2rem; }
-        .step-card:last-child { border-left: 4px solid transparent; }
-        .step-number { position: absolute; left: -14px; top: 0; width: 24px; height: 24px; background: #6366f1; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
-        .tab-active { border-bottom: 3px solid #6366f1; color: #6366f1; }
-        .timeline-sub-item { position: relative; padding-left: 1rem; margin-top: 0.5rem; color: #475569; font-size: 0.875rem; }
-        .timeline-sub-item::before { content: "•"; position: absolute; left: 0; color: #6366f1; font-weight: bold; }
+        body { font-family: 'Inter', sans-serif; }
+        .font-serif { font-family: 'Playfair Display', serif; }
+        .sidebar-link.active {
+            background-color: #f43f5e;
+            color: white;
+            box-shadow: 0 10px 15px -3px rgba(244, 63, 94, 0.2);
+        }
+        .section-content { display: none; }
+        .section-content.active { display: block; }
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        /* Custom scrollbar for better look */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #fb7185; border-radius: 10px; }
     </style>
 </head>
-<body class="p-4 md:p-8 text-slate-800">
+<body class="bg-slate-50 text-slate-800">
 
-    <div class="max-w-6xl mx-auto">
-        <header class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
-            <div class="text-center md:text-left">
-                <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight">The Wedding Master ✨</h1>
-                <p class="text-slate-500 mt-1">Detail Timeline & Manajemen Firebase</p>
-            </div>
-            <div class="bg-indigo-600 px-6 py-4 rounded-2xl text-white shadow-xl flex gap-8">
-                <div>
-                    <p class="text-[10px] uppercase opacity-70 font-bold">Total Budget</p>
-                    <h2 id="grandTotal" class="text-xl font-bold">Rp 0</h2>
-                </div>
-                <div class="border-l border-indigo-400 pl-8">
-                    <p class="text-[10px] uppercase opacity-70 font-bold">Tagihan Vendor</p>
-                    <h2 id="remainingDebt" class="text-xl font-bold">Rp 0</h2>
-                </div>
-            </div>
-        </header>
-
-        <nav class="flex gap-6 mb-8 border-b border-slate-200 px-2 overflow-x-auto whitespace-nowrap scrollbar-hide">
-            <button onclick="switchTab('panduan')" id="tab-panduan" class="pb-4 font-bold text-slate-400 transition-all tab-active">Timeline Rinci</button>
-            <button onclick="switchTab('berkas')" id="tab-berkas" class="pb-4 font-bold text-slate-400 transition-all">Administrasi</button>
-            <button onclick="switchTab('seserahan')" id="tab-seserahan" class="pb-4 font-bold text-slate-400 transition-all">Seserahan</button>
-            <button onclick="switchTab('prabotan')" id="tab-prabotan" class="pb-4 font-bold text-slate-400 transition-all">Prabotan Rumah</button>
-            <button onclick="switchTab('vendor')" id="tab-vendor" class="pb-4 font-bold text-slate-400 transition-all">Vendor (MoU)</button>
-        </nav>
-
-        <div id="content-panduan" class="tab-content">
-            <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
-                <h2 class="text-2xl font-black mb-8 text-indigo-900 italic uppercase tracking-wider">Master Checklist & Timeline</h2>
-                
-                <div class="space-y-2">
-                    <div class="step-card">
-                        <div class="step-number">1</div>
-                        <h4 class="font-bold text-lg text-indigo-600">Fase 1: Persiapan Dasar (H-12 s/d H-9 Bulan)</h4>
-                        <div class="grid md:grid-cols-2 gap-4 mt-3">
-                            <div class="timeline-sub-item"><b>Pertemuan Keluarga:</b> Perkenalan antar keluarga besar dan penentuan tanggal/bulan baik.</div>
-                            <div class="timeline-sub-item"><b>Penentuan Anggaran:</b> Diskusi jujur mengenai siapa yang membayar apa dan batas maksimal pengeluaran.</div>
-                            <div class="timeline-sub-item"><b>Pencarian Venue:</b> Survey lokasi (Gedung/Hotel/Rumah) dan DP tempat secepatnya karena tanggal favorit cepat habis.</div>
-                            <div class="timeline-sub-item"><b>Konsep Besar:</b> Menentukan tema warna, adat yang dipakai, dan jumlah undangan (Guest List awal).</div>
-                        </div>
-                    </div>
-
-                    <div class="step-card">
-                        <div class="step-number">2</div>
-                        <h4 class="font-bold text-lg text-indigo-600">Fase 2: Pemilihan Vendor Utama (H-8 s/d H-6 Bulan)</h4>
-                        <div class="grid md:grid-cols-2 gap-4 mt-3">
-                            <div class="timeline-sub-item"><b>Catering & Food Testing:</b> Mencoba beberapa vendor catering dan mengunci paket menu.</div>
-                            <div class="timeline-sub-item"><b>MUA & Attire:</b> Booking perias pengantin dan mulai mencari inspirasi kebaya/jas.</div>
-                            <div class="timeline-sub-item"><b>Dokumentasi:</b> Pilih fotografer & videografer yang sesuai dengan style yang diinginkan.</div>
-                            <div class="timeline-sub-item"><b>Dekorasi & Entertainment:</b> Konsultasi layout pelaminan dan daftar lagu (band/akustik).</div>
-                        </div>
-                    </div>
-
-                    <div class="step-card">
-                        <div class="step-number">3</div>
-                        <h4 class="font-bold text-lg text-indigo-600">Fase 3: Administrasi & Logistik (H-5 s/d H-3 Bulan)</h4>
-                        <div class="grid md:grid-cols-2 gap-4 mt-3">
-                            <div class="timeline-sub-item"><b>Checklist Seserahan:</b> Mulai membeli barang cicilan seserahan (Gunakan Tab Seserahan).</div>
-                            <div class="timeline-sub-item"><b>Cek Kesehatan:</b> Suntik TT di Puskesmas dan tes kesehatan pra-nikah (Elsimil).</div>
-                            <div class="timeline-sub-item"><b>Pemesanan Undangan:</b> Desain undangan digital/fisik dan pesan souvenir sesuai jumlah tamu.</div>
-                            <div class="timeline-sub-item"><b>Seragam Keluarga:</b> Pembelian bahan dan distribusi ke keluarga besar/bridesmaid.</div>
-                        </div>
-                    </div>
-
-                    <div class="step-card">
-                        <div class="step-number">4</div>
-                        <h4 class="font-bold text-lg text-indigo-600">Fase 4: Finalisasi (H-2 Bulan s/d H-1 Bulan)</h4>
-                        <div class="grid md:grid-cols-2 gap-4 mt-3">
-                            <div class="timeline-sub-item"><b>Pendaftaran KUA:</b> Memasukkan berkas lengkap ke KUA setempat (Lihat Tab Administrasi).</div>
-                            <div class="timeline-sub-item"><b>Fitting Terakhir:</b> Pastikan baju pengantin pas dan nyaman.</div>
-                            <div class="timeline-sub-item"><b>Technical Meeting:</b> Mengumpulkan semua vendor di venue untuk koordinasi alur acara.</div>
-                            <div class="timeline-sub-item"><b>Distribusi Undangan:</b> Mulai menyebarkan undangan fisik dan digital secara bertahap.</div>
-                        </div>
-                    </div>
-
-                    <div class="step-card">
-                        <div class="step-number">5</div>
-                        <h4 class="font-bold text-lg text-emerald-600">Minggu Terakhir & Hari H</h4>
-                        <div class="grid md:grid-cols-2 gap-4 mt-3">
-                            <div class="timeline-sub-item"><b>Pelunasan:</b> Selesaikan semua sisa pembayaran vendor (Cek Dashboard Tagihan).</div>
-                            <div class="timeline-sub-item"><b>Briefing Keluarga:</b> Pastikan penanggung jawab mahar, cincin, dan buku nikah sudah ditunjuk.</div>
-                            <div class="timeline-sub-item"><b>Istirahat Total:</b> Fokus pada mental dan kesehatan fisik 2 hari sebelum acara.</div>
-                            <div class="timeline-sub-item"><b>The Big Day:</b> Nikmati setiap momen, serahkan teknis kepada WO/Panitia Keluarga.</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <div id="loader" class="loading-overlay">
+        <div class="flex flex-col items-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-rose-500 mb-4"></div>
+            <p class="text-rose-500 font-medium">Menyiapkan Detail Persiapan...</p>
         </div>
-
-        <div id="content-berkas" class="tab-content hidden">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
-                    <h3 class="font-bold text-lg mb-4">📁 Checklist Dokumen Wajib</h3>
-                    <ul class="text-sm space-y-2">
-                        <li><input type="checkbox"> Fotokopi KTP & KK (CPP & CPW)</li>
-                        <li><input type="checkbox"> Akta Kelahiran & Ijazah Terakhir</li>
-                        <li><input type="checkbox"> Pas Foto 2x3 & 4x6 (Latar Biru)</li>
-                        <li><input type="checkbox"> Surat Rekomendasi Nikah (Jika Numpang)</li>
-                        <li><input type="checkbox"> Fotokopi KTP Saksi Nikah</li>
-                    </ul>
-                </div>
-                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
-                    <h3 class="font-bold text-lg mb-4 text-indigo-600">🏢 Alur Kantor Pemerintah</h3>
-                    <p class="text-sm text-slate-600 leading-relaxed">
-                        1. <b>RT/RW & Kelurahan:</b> Minta pengantar dan buat Form N1, N2, N4.<br><br>
-                        2. <b>Puskesmas:</b> Lakukan pemeriksaan kesehatan dan dapatkan sertifikat layak nikah.<br><br>
-                        3. <b>KUA:</b> Daftarkan diri di KUA kecamatan tempat acara berlangsung.
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <div id="content-seserahan" class="tab-content hidden">
-            <div class="bg-white p-6 rounded-3xl border border-slate-200">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-                    <input id="sNama" type="text" placeholder="Barang..." class="px-4 py-3 border rounded-xl">
-                    <input id="sLink" type="text" placeholder="Link Pembelian" class="px-4 py-3 border rounded-xl">
-                    <input id="sHarga" type="number" placeholder="Harga" class="px-4 py-3 border rounded-xl">
-                    <button onclick="addItem('s')" class="bg-indigo-600 text-white rounded-xl font-bold px-6">Tambah</button>
-                </div>
-                <table class="w-full text-left text-sm"><tbody id="sTable" class="divide-y"></tbody></table>
-            </div>
-        </div>
-
-        <div id="content-prabotan" class="tab-content hidden">
-            <div class="bg-white p-6 rounded-3xl border border-slate-200">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-                    <input id="pNama" type="text" placeholder="Nama Prabotan..." class="px-4 py-3 border rounded-xl">
-                    <input id="pLink" type="text" placeholder="Link Pembelian" class="px-4 py-3 border rounded-xl">
-                    <input id="pHarga" type="number" placeholder="Harga" class="px-4 py-3 border rounded-xl">
-                    <button onclick="addItem('p')" class="bg-emerald-600 text-white rounded-xl font-bold px-6">Tambah</button>
-                </div>
-                <table class="w-full text-left text-sm"><tbody id="pTable" class="divide-y"></tbody></table>
-            </div>
-        </div>
-
-        <div id="content-vendor" class="tab-content hidden">
-            <div class="bg-white p-6 rounded-3xl border border-slate-200">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                    <input id="vNama" type="text" placeholder="Nama Vendor" class="border rounded-xl px-4 py-3">
-                    <input id="vLayanan" type="text" placeholder="Layanan" class="border rounded-xl px-4 py-3">
-                    <input id="vTotal" type="number" placeholder="Total" class="border rounded-xl px-4 py-3">
-                    <input id="vDP" type="number" placeholder="DP" class="border rounded-xl px-4 py-3">
-                </div>
-                <button onclick="addVendor()" class="w-full bg-slate-800 text-white py-4 rounded-xl font-bold mb-8">Simpan Kontrak</button>
-                <table class="w-full text-left text-sm"><tbody id="vTable" class="divide-y"></tbody></table>
-            </div>
-        </div>
-
-        <footer class="text-center mt-20 text-slate-400 text-sm italic">
-            &copy; 2026 Wedding Master Planner - Detail Checklist Version.
-        </footer>
     </div>
 
-    <script>
-        // FIREBASE CONFIGURATION (Tetap gunakan milik Anda)
+    <div class="min-h-screen flex">
+        <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 hidden lg:hidden" onclick="toggleSidebar()"></div>
+
+        <!-- Sidebar -->
+        <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 w-72 bg-white border-r border-gray-100 z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
+            <div class="p-6 h-full flex flex-col">
+                <div class="flex items-center gap-2 mb-10">
+                    <div class="bg-rose-500 p-2 rounded-lg text-white">
+                        <i data-lucide="heart" class="fill-current"></i>
+                    </div>
+                    <h1 class="text-xl font-bold text-gray-800 font-serif">WeddingPro</h1>
+                </div>
+                
+                <nav class="space-y-2 flex-1">
+                    <button onclick="switchTab('checklist')" id="btn-checklist" class="sidebar-link active w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-gray-500 hover:bg-rose-50 hover:text-rose-600">
+                        <i data-lucide="list-checks"></i>
+                        <span class="font-medium">Panduan Lengkap</span>
+                    </button>
+                    <button onclick="switchTab('seserahan')" id="btn-seserahan" class="sidebar-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-gray-500 hover:bg-rose-50 hover:text-rose-600">
+                        <i data-lucide="gift"></i>
+                        <span class="font-medium">Seserahan & Mahar</span>
+                    </button>
+                    <button onclick="switchTab('vendor')" id="btn-vendor" class="sidebar-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-gray-500 hover:bg-rose-50 hover:text-rose-600">
+                        <i data-lucide="briefcase"></i>
+                        <span class="font-medium">Daftar Vendor</span>
+                    </button>
+                    <button onclick="switchTab('prabotan')" id="btn-prabotan" class="sidebar-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-gray-500 hover:bg-rose-50 hover:text-rose-600">
+                        <i data-lucide="sofa"></i>
+                        <span class="font-medium">Isi Rumah</span>
+                    </button>
+                </nav>
+
+                <div class="mt-auto p-4 bg-rose-50 rounded-2xl border border-rose-100">
+                    <p class="text-[10px] text-rose-400 font-bold uppercase tracking-wider mb-1 text-center">Estimasi Anggaran</p>
+                    <p id="grand-total" class="text-lg font-bold text-rose-600 text-center">Rp 0</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col min-w-0 overflow-hidden">
+            <header class="bg-white/80 backdrop-blur-md border-b border-gray-100 px-6 py-4 flex items-center justify-between sticky top-0 z-30">
+                <div class="flex items-center gap-4">
+                    <button class="lg:hidden p-2 text-gray-500 hover:bg-gray-100 rounded-lg" onclick="toggleSidebar()"><i data-lucide="menu"></i></button>
+                    <h2 id="section-title" class="text-lg font-semibold text-gray-700">Checklist Persiapan</h2>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div id="user-status" class="hidden sm:block text-[10px] text-gray-400 font-mono bg-gray-50 px-3 py-1.5 rounded-full border">UID: ---</div>
+                </div>
+            </header>
+
+            <div id="content-scroll" class="flex-1 overflow-y-auto p-4 md:p-8">
+                <!-- Checklist Section -->
+                <div id="section-checklist" class="section-content active max-w-4xl mx-auto">
+                    <div class="mb-10">
+                        <h3 class="text-3xl font-bold text-gray-900 font-serif">Rencana Detail Pernikahan</h3>
+                        <p class="text-gray-500 mt-2">Daftar tugas terperinci berdasarkan linimasa ideal.</p>
+                    </div>
+                    
+                    <div id="checklist-timeline" class="space-y-12">
+                        <!-- Content injected by JS -->
+                    </div>
+                </div>
+
+                <!-- Inventory Section -->
+                <div id="section-inventory" class="section-content max-w-5xl mx-auto space-y-8">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                        <div>
+                            <h3 id="inv-title" class="text-2xl font-bold text-gray-800 font-serif capitalize">Manajemen Item</h3>
+                            <p class="text-sm text-gray-500">Kelola rincian biaya dan link referensi di sini.</p>
+                        </div>
+                        <div class="bg-white px-6 py-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+                            <div class="p-3 bg-rose-50 text-rose-500 rounded-xl"><i data-lucide="calculator"></i></div>
+                            <div>
+                                <p id="subtotal-label" class="text-[10px] font-bold text-gray-400 uppercase">Subtotal</p>
+                                <p id="subtotal-value" class="text-2xl font-bold text-gray-800">Rp 0</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm grid grid-cols-1 md:grid-cols-3 gap-5">
+                        <div class="space-y-1.5">
+                            <label class="text-[11px] font-bold text-gray-500 uppercase px-1">Nama Item/Kebutuhan</label>
+                            <input id="inp-name" type="text" placeholder="Misal: Catering Utama" class="w-full p-3.5 bg-slate-50 border-none rounded-2xl text-sm focus:ring-2 focus:ring-rose-200 outline-none transition-all">
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[11px] font-bold text-gray-500 uppercase px-1">Link/Lokasi</label>
+                            <input id="inp-link" type="text" placeholder="https://..." class="w-full p-3.5 bg-slate-50 border-none rounded-2xl text-sm focus:ring-2 focus:ring-rose-200 outline-none transition-all">
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[11px] font-bold text-gray-500 uppercase px-1">Biaya (Rp)</label>
+                            <div class="flex gap-2">
+                                <input id="inp-price" type="number" placeholder="0" class="flex-1 p-3.5 bg-slate-50 border-none rounded-2xl text-sm focus:ring-2 focus:ring-rose-200 outline-none transition-all">
+                                <button onclick="addItem()" class="bg-rose-500 text-white px-6 rounded-2xl hover:bg-rose-600 transition-all active:scale-95 shadow-lg shadow-rose-100">
+                                    <i data-lucide="plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead class="bg-slate-50/50">
+                                    <tr>
+                                        <th class="px-6 py-5 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Detail Deskripsi</th>
+                                        <th class="px-6 py-5 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Estimasi Harga</th>
+                                        <th class="px-6 py-5 text-[10px] font-bold text-gray-400 uppercase tracking-widest text-right">Tindakan</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="inventory-table-body" class="divide-y divide-gray-50"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+        import { getFirestore, doc, collection, setDoc, onSnapshot, addDoc, deleteDoc, query } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
         const firebaseConfig = {
-  apiKey: "AIzaSyDwqg-gmE9__3uEejomI19iEAngvhbQRT0",
-  authDomain: "arus-masuk-kas.firebaseapp.com",
-  projectId: "arus-masuk-kas",
-  storageBucket: "arus-masuk-kas.firebasestorage.app",
-  messagingSenderId: "1034948401170",
-  appId: "1:1034948401170:web:01adfae6c89bc38bd160cb",
-  measurementId: "G-R2T0ZNBP7P"
-};
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+            apiKey: "AIzaSyAJwuNmftdXJxZIwyQq1Cx64DC7Zm1zZ7M",
+            authDomain: "weding-planning.firebaseapp.com",
+            projectId: "weding-planning",
+            storageBucket: "weding-planning.firebasestorage.app",
+            messagingSenderId: "989634176070",
+            appId: "1:989634176070:web:c961669c8371212661d647"
+        };
 
-        function switchTab(t) {
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
-            document.querySelectorAll('nav button').forEach(b => b.classList.remove('tab-active'));
-            document.getElementById('content-' + t).classList.remove('hidden');
-            document.getElementById('tab-' + t).classList.add('tab-active');
-        }
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = "wedding-planner-001";
 
-        function formatRp(v) { return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(v); }
+        let currentUser = null;
+        let currentTab = 'checklist';
+        let data = { seserahan: [], vendor: [], prabotan: [], checklist: {} };
 
-        function addItem(type) {
-            const pre = type === 's' ? 's' : 'p';
-            const name = document.getElementById(pre + 'Nama').value;
-            const link = document.getElementById(pre + 'Link').value;
-            const price = parseFloat(document.getElementById(pre + 'Harga').value) || 0;
-            if (name) {
-                db.ref(type === 's' ? 'seserahan' : 'prabotan').push({ name, link, price });
-                document.getElementById(pre + 'Nama').value = ""; document.getElementById(pre + 'Link').value = ""; document.getElementById(pre + 'Harga').value = "";
+        // Detail Tahapan Pernikahan (Data Lokal)
+        const timeline = [
+            {
+                period: "12-9 Bulan Sebelum",
+                tasks: [
+                    { id: 't1', title: 'Tentukan Anggaran Maksimal', detail: 'Diskusikan total dana dari kedua belah pihak dan orang tua.' },
+                    { id: 't2', title: 'Tentukan Konsep & Tema', detail: 'Tradisional, Nasional, atau Modern? Indoor atau Outdoor?' },
+                    { id: 't3', title: 'Booking Venue Utama', detail: 'Cari gedung atau lokasi yang tersedia di tanggal impian Anda.' },
+                    { id: 't4', title: 'List Tamu Kasar', detail: 'Estimasi jumlah tamu untuk menentukan kapasitas katering dan gedung.' }
+                ]
+            },
+            {
+                period: "8-6 Bulan Sebelum",
+                tasks: [
+                    { id: 't5', title: 'Pilih Vendor Katering', detail: 'Lakukan food tasting dan pastikan paket termasuk dekorasi/piring.' },
+                    { id: 't6', title: 'Booking Fotografer & MUA', detail: 'Vendor populer biasanya penuh 6 bulan sebelum acara.' },
+                    { id: 't7', title: 'Pilih Baju Pengantin', detail: 'Mulai cari penjahit atau tempat sewa baju untuk fitting awal.' },
+                    { id: 't8', title: 'Bentuk Panitia Inti', detail: 'Tunjuk koordinator dari keluarga atau WO profesional.' }
+                ]
+            },
+            {
+                period: "5-3 Bulan Sebelum",
+                tasks: [
+                    { id: 't9', title: 'Administrasi KUA/Sipil', detail: 'Siapkan KTP, KK, Akta Lahir, dan Surat Pengantar NA.' },
+                    { id: 't10', title: 'Pesan Undangan & Souvenir', detail: 'Pilih desain dan pastikan jumlahnya lebih 10% dari daftar tamu.' },
+                    { id: 't11', title: 'Siapkan Mahar & Seserahan', detail: 'Mulai cicil isi box seserahan dan beli perhiasan mahar.' },
+                    { id: 't12', title: 'Tentukan Bridesmaid/Groomsmen', detail: 'Berikan bahan kain atau seragam kepada rekan terdekat.' }
+                ]
+            },
+            {
+                period: "2 Bulan - 1 Bulan Sebelum",
+                tasks: [
+                    { id: 't13', title: 'Final Checklist Vendor', detail: 'Hubungi semua vendor untuk memastikan tidak ada perubahan jadwal.' },
+                    { id: 't14', title: 'Sebar Undangan', detail: 'Mulai kirim undangan fisik dan digital secara bertahap.' },
+                    { id: 't15', title: 'Fitting Terakhir', detail: 'Pastikan baju pas setelah berat badan mungkin berubah karena stres.' },
+                    { id: 't16', title: 'Technical Meeting (TM)', detail: 'Kumpulkan semua vendor di lokasi untuk simulasi hari-H.' }
+                ]
             }
+        ];
+
+        window.onload = () => {
+            signInAnonymously(auth).catch(console.error);
+            onAuthStateChanged(auth, user => {
+                if (user) {
+                    currentUser = user;
+                    document.getElementById('user-status').innerText = `ID: ${user.uid.slice(0,8)}`;
+                    initDatabase();
+                    document.getElementById('loader').classList.add('hidden');
+                    lucide.createIcons();
+                }
+            });
+        };
+
+        function initDatabase() {
+            if (!currentUser) return;
+            onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'checklist', 'status'), snap => {
+                data.checklist = snap.exists() ? snap.data() : {};
+                if (currentTab === 'checklist') renderChecklist();
+            });
+            ['seserahan', 'vendor', 'prabotan'].forEach(col => {
+                onSnapshot(query(collection(db, 'artifacts', appId, 'public', 'data', col)), snap => {
+                    data[col] = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    if (currentTab === col) renderInventory();
+                    updateTotals();
+                });
+            });
         }
 
-        function addVendor() {
-            const n = document.getElementById('vNama').value;
-            const l = document.getElementById('vLayanan').value;
-            const t = parseFloat(document.getElementById('vTotal').value) || 0;
-            const d = parseFloat(document.getElementById('vDP').value) || 0;
-            if (n) db.ref('vendor').push({ n, l, t, d });
+        window.switchTab = (tabId) => {
+            currentTab = tabId;
+            document.querySelectorAll('.sidebar-link').forEach(el => el.classList.remove('active'));
+            document.getElementById(`btn-${tabId}`)?.classList.add('active');
+            document.querySelectorAll('.section-content').forEach(el => el.classList.remove('active'));
+            document.getElementById('section-title').innerText = tabId === 'checklist' ? 'Panduan Lengkap' : `Manajemen ${tabId}`;
+
+            if (tabId === 'checklist') {
+                document.getElementById('section-checklist').classList.add('active');
+                renderChecklist();
+            } else {
+                document.getElementById('section-inventory').classList.add('active');
+                document.getElementById('inv-title').innerText = `Daftar ${tabId}`;
+                document.getElementById('subtotal-label').innerText = `Subtotal ${tabId}`;
+                renderInventory();
+            }
+            if (window.innerWidth < 1024) toggleSidebar();
+        };
+
+        function renderChecklist() {
+            const container = document.getElementById('checklist-timeline');
+            container.innerHTML = timeline.map(section => `
+                <div class="space-y-6">
+                    <div class="flex items-center gap-4">
+                        <div class="h-px bg-rose-200 flex-1"></div>
+                        <span class="text-rose-500 font-bold text-xs uppercase tracking-widest bg-rose-50 px-4 py-1.5 rounded-full border border-rose-100">${section.period}</span>
+                        <div class="h-px bg-rose-200 flex-1"></div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        ${section.tasks.map(task => {
+                            const isDone = data.checklist[task.id] || false;
+                            return `
+                                <div onclick="window.toggleCheck('${task.id}')" class="group p-5 bg-white border rounded-3xl flex gap-4 cursor-pointer hover:border-rose-400 hover:shadow-xl hover:shadow-rose-100/50 transition-all duration-300 ${isDone ? 'bg-slate-50 border-slate-200' : 'border-gray-100'}">
+                                    <div class="mt-1">
+                                        <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${isDone ? 'bg-rose-500 border-rose-500 text-white' : 'border-gray-200 group-hover:border-rose-300'}">
+                                            ${isDone ? '<i data-lucide="check" style="width:14px;height:14px"></i>' : ''}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-gray-800 ${isDone ? 'line-through text-gray-400' : ''}">${task.title}</h4>
+                                        <p class="text-xs text-gray-500 mt-1 leading-relaxed">${task.detail}</p>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
         }
 
-        function remove(type, id) {
-            const path = type === 's' ? 'seserahan' : type === 'p' ? 'prabotan' : 'vendor';
-            db.ref(path + '/' + id).remove();
+        function renderInventory() {
+            const list = Array.isArray(data[currentTab]) ? data[currentTab] : [];
+            const tbody = document.getElementById('inventory-table-body');
+            let sub = 0;
+            if (list.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" class="p-16 text-center text-gray-400 italic">Belum ada rincian ditambahkan.</td></tr>`;
+            } else {
+                tbody.innerHTML = list.map(item => {
+                    const price = Number(item.price) || 0;
+                    sub += price;
+                    return `
+                        <tr class="hover:bg-rose-50/20 group transition-all">
+                            <td class="px-6 py-5">
+                                <div class="font-semibold text-gray-800">${item.name}</div>
+                                ${item.link ? `<a href="${item.link}" target="_blank" class="text-[10px] text-rose-400 hover:text-rose-600 flex items-center gap-1 mt-1.5"><i data-lucide="external-link" size="10"></i> Referensi Link</a>` : ''}
+                            </td>
+                            <td class="px-6 py-5 font-mono font-bold text-gray-700 italic">Rp ${price.toLocaleString('id-ID')}</td>
+                            <td class="px-6 py-5 text-right">
+                                <button onclick="removeItem('${item.id}')" class="text-gray-200 hover:text-rose-500 p-2.5 transition-all">
+                                    <i data-lucide="trash-2" size="18"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+            document.getElementById('subtotal-value').innerText = `Rp ${sub.toLocaleString('id-ID')}`;
+            lucide.createIcons();
         }
 
-        db.ref().on('value', snapshot => {
-            const data = snapshot.val() || {};
-            const sB = document.getElementById('sTable');
-            const pB = document.getElementById('pTable');
-            const vB = document.getElementById('vTable');
-            sB.innerHTML = ""; pB.innerHTML = ""; vB.innerHTML = "";
+        function updateTotals() {
+            const total = ['seserahan', 'vendor', 'prabotan'].reduce((acc, col) => 
+                acc + (Array.isArray(data[col]) ? data[col].reduce((s, i) => s + (Number(i.price) || 0), 0) : 0), 0);
+            document.getElementById('grand-total').innerText = `Rp ${total.toLocaleString('id-ID')}`;
+        }
 
-            let budget = 0; let hutang = 0;
-
-            if(data.seserahan) Object.keys(data.seserahan).forEach(id => {
-                const i = data.seserahan[id]; budget += i.price;
-                sB.innerHTML += `<tr><td class="py-4 font-bold">${i.name}</td><td><a href="${i.link}" target="_blank" class="text-indigo-600 underline">Link ↗</a></td><td class="text-right">${formatRp(i.price)}</td><td class="text-center"><button onclick="remove('s','${id}')" class="text-red-500 font-bold">Hapus</button></td></tr>`;
+        window.toggleCheck = async (id) => {
+            if (!currentUser) return;
+            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'checklist', 'status'), {
+                ...data.checklist, [id]: !data.checklist[id]
             });
+        };
 
-            if(data.prabotan) Object.keys(data.prabotan).forEach(id => {
-                const i = data.prabotan[id]; budget += i.price;
-                pB.innerHTML += `<tr><td class="py-4 font-bold">${i.name}</td><td><a href="${i.link}" target="_blank" class="text-emerald-600 underline">Link ↗</a></td><td class="text-right">${formatRp(i.price)}</td><td class="text-center"><button onclick="remove('p','${id}')" class="text-red-500 font-bold">Hapus</button></td></tr>`;
-            });
+        window.addItem = async () => {
+            const n = document.getElementById('inp-name').value;
+            const p = document.getElementById('inp-price').value;
+            const l = document.getElementById('inp-link').value;
+            if (!n || !currentUser) return;
+            try {
+                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', currentTab), {
+                    name: n, price: Number(p) || 0, link: l, date: new Date().toISOString()
+                });
+                document.getElementById('inp-name').value = '';
+                document.getElementById('inp-price').value = '';
+                document.getElementById('inp-link').value = '';
+            } catch (e) { console.error(e); }
+        };
 
-            if(data.vendor) Object.keys(data.vendor).forEach(id => {
-                const i = data.vendor[id]; budget += i.t; hutang += (i.t - i.d);
-                vB.innerHTML += `<tr><td class="py-4 font-bold">${i.n} (${i.l})</td><td class="text-right">${formatRp(i.t)}</td><td class="text-right">${formatRp(i.d)}</td><td class="text-right text-red-500 font-bold">${formatRp(i.t-i.d)}</td><td class="text-center"><button onclick="remove('v','${id}')" class="text-red-500 font-bold">Hapus</button></td></tr>`;
-            });
+        window.removeItem = async (id) => {
+            if (!currentUser) return;
+            await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', currentTab, id));
+        };
 
-            document.getElementById('grandTotal').innerText = formatRp(budget);
-            document.getElementById('remainingDebt').innerText = formatRp(hutang);
-        });
+        window.toggleSidebar = () => {
+            document.getElementById('sidebar').classList.toggle('-translate-x-full');
+            document.getElementById('sidebarOverlay').classList.toggle('hidden');
+        };
+
+        window.switchTab = switchTab;
     </script>
 </body>
 </html>
