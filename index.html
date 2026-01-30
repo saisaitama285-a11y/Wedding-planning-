@@ -26,7 +26,6 @@
             align-items: center;
             z-index: 9999;
         }
-        /* Custom scrollbar for better look */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: #fb7185; border-radius: 10px; }
@@ -44,7 +43,6 @@
     <div class="min-h-screen flex">
         <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 hidden lg:hidden" onclick="toggleSidebar()"></div>
 
-        <!-- Sidebar -->
         <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 w-72 bg-white border-r border-gray-100 z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
             <div class="p-6 h-full flex flex-col">
                 <div class="flex items-center gap-2 mb-10">
@@ -71,41 +69,41 @@
                         <i data-lucide="sofa"></i>
                         <span class="font-medium">Isi Rumah</span>
                     </button>
+                    <button onclick="switchTab('tabungan')" id="btn-tabungan" class="sidebar-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-gray-500 hover:bg-rose-50 hover:text-rose-600">
+                        <i data-lucide="piggy-bank"></i>
+                        <span class="font-medium">Tabungan</span>
+                    </button>
                 </nav>
 
                 <div class="mt-auto p-4 bg-rose-50 rounded-2xl border border-rose-100">
                     <p class="text-[10px] text-rose-400 font-bold uppercase tracking-wider mb-1 text-center">Estimasi Anggaran</p>
                     <p id="grand-total" class="text-lg font-bold text-rose-600 text-center">Rp 0</p>
+                    <div class="mt-2 pt-2 border-t border-rose-200">
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider text-center">Kekurangan Dana</p>
+                        <p id="gap-total" class="text-sm font-bold text-orange-600 text-center">Rp 0</p>
+                    </div>
                 </div>
             </div>
         </aside>
 
-        <!-- Main Content -->
         <main class="flex-1 flex flex-col min-w-0 overflow-hidden">
             <header class="bg-white/80 backdrop-blur-md border-b border-gray-100 px-6 py-4 flex items-center justify-between sticky top-0 z-30">
                 <div class="flex items-center gap-4">
                     <button class="lg:hidden p-2 text-gray-500 hover:bg-gray-100 rounded-lg" onclick="toggleSidebar()"><i data-lucide="menu"></i></button>
                     <h2 id="section-title" class="text-lg font-semibold text-gray-700">Checklist Persiapan</h2>
                 </div>
-                <div class="flex items-center gap-3">
-                    <div id="user-status" class="hidden sm:block text-[10px] text-gray-400 font-mono bg-gray-50 px-3 py-1.5 rounded-full border">UID: ---</div>
-                </div>
+                <div id="user-status" class="hidden sm:block text-[10px] text-gray-400 font-mono bg-gray-50 px-3 py-1.5 rounded-full border">UID: ---</div>
             </header>
 
             <div id="content-scroll" class="flex-1 overflow-y-auto p-4 md:p-8">
-                <!-- Checklist Section -->
                 <div id="section-checklist" class="section-content active max-w-4xl mx-auto">
                     <div class="mb-10">
                         <h3 class="text-3xl font-bold text-gray-900 font-serif">Rencana Detail Pernikahan</h3>
                         <p class="text-gray-500 mt-2">Daftar tugas terperinci berdasarkan linimasa ideal.</p>
                     </div>
-                    
-                    <div id="checklist-timeline" class="space-y-12">
-                        <!-- Content injected by JS -->
-                    </div>
+                    <div id="checklist-timeline" class="space-y-12"></div>
                 </div>
 
-                <!-- Inventory Section -->
                 <div id="section-inventory" class="section-content max-w-5xl mx-auto space-y-8">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                         <div>
@@ -124,16 +122,16 @@
                     <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm grid grid-cols-1 md:grid-cols-3 gap-5">
                         <div class="space-y-1.5">
                             <label class="text-[11px] font-bold text-gray-500 uppercase px-1">Nama Item/Kebutuhan</label>
-                            <input id="inp-name" type="text" placeholder="Misal: Catering Utama" class="w-full p-3.5 bg-slate-50 border-none rounded-2xl text-sm focus:ring-2 focus:ring-rose-200 outline-none transition-all">
+                            <input id="inp-name" type="text" placeholder="Misal: Catering Utama" class="w-full p-3.5 bg-slate-50 border-none rounded-2xl text-sm outline-none transition-all focus:ring-2 focus:ring-rose-200">
                         </div>
                         <div class="space-y-1.5">
                             <label class="text-[11px] font-bold text-gray-500 uppercase px-1">Link/Lokasi</label>
-                            <input id="inp-link" type="text" placeholder="https://..." class="w-full p-3.5 bg-slate-50 border-none rounded-2xl text-sm focus:ring-2 focus:ring-rose-200 outline-none transition-all">
+                            <input id="inp-link" type="text" placeholder="https://..." class="w-full p-3.5 bg-slate-50 border-none rounded-2xl text-sm outline-none transition-all focus:ring-2 focus:ring-rose-200">
                         </div>
                         <div class="space-y-1.5">
                             <label class="text-[11px] font-bold text-gray-500 uppercase px-1">Biaya (Rp)</label>
                             <div class="flex gap-2">
-                                <input id="inp-price" type="number" placeholder="0" class="flex-1 p-3.5 bg-slate-50 border-none rounded-2xl text-sm focus:ring-2 focus:ring-rose-200 outline-none transition-all">
+                                <input id="inp-price" type="number" placeholder="0" class="flex-1 p-3.5 bg-slate-50 border-none rounded-2xl text-sm outline-none transition-all focus:ring-2 focus:ring-rose-200">
                                 <button onclick="addItem()" class="bg-rose-500 text-white px-6 rounded-2xl hover:bg-rose-600 transition-all active:scale-95 shadow-lg shadow-rose-100">
                                     <i data-lucide="plus"></i>
                                 </button>
@@ -142,18 +140,61 @@
                     </div>
 
                     <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left">
-                                <thead class="bg-slate-50/50">
-                                    <tr>
-                                        <th class="px-6 py-5 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Detail Deskripsi</th>
-                                        <th class="px-6 py-5 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Estimasi Harga</th>
-                                        <th class="px-6 py-5 text-[10px] font-bold text-gray-400 uppercase tracking-widest text-right">Tindakan</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="inventory-table-body" class="divide-y divide-gray-50"></tbody>
-                            </table>
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-slate-50/50">
+                                <tr>
+                                    <th class="px-6 py-5 font-bold text-gray-400 uppercase tracking-widest text-[10px]">Detail Deskripsi</th>
+                                    <th class="px-6 py-5 font-bold text-gray-400 uppercase tracking-widest text-[10px]">Estimasi Harga</th>
+                                    <th class="px-6 py-5 font-bold text-gray-400 uppercase tracking-widest text-[10px] text-right">Tindakan</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventory-table-body" class="divide-y divide-gray-50"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="section-tabungan" class="section-content max-w-5xl mx-auto space-y-8">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-800 font-serif">Catatan Tabungan</h3>
+                            <p class="text-sm text-gray-500">Pantau akumulasi dana dari masing-masing pihak.</p>
                         </div>
+                        <div class="bg-white px-6 py-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+                            <div class="p-3 bg-emerald-50 text-emerald-500 rounded-xl"><i data-lucide="wallet"></i></div>
+                            <div>
+                                <p class="text-[10px] font-bold text-gray-400 uppercase">Total Terkumpul</p>
+                                <p id="saving-total-value" class="text-2xl font-bold text-emerald-600">Rp 0</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="space-y-1.5">
+                            <label class="text-[11px] font-bold text-gray-500 uppercase px-1">Nama Penabung</label>
+                            <input id="inp-saver" type="text" placeholder="Misal: Nama Pria / Wanita" class="w-full p-3.5 bg-slate-50 border-none rounded-2xl text-sm outline-none transition-all focus:ring-2 focus:ring-emerald-200">
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[11px] font-bold text-gray-500 uppercase px-1">Jumlah Setoran (Rp)</label>
+                            <div class="flex gap-2">
+                                <input id="inp-save-amount" type="number" placeholder="0" class="flex-1 p-3.5 bg-slate-50 border-none rounded-2xl text-sm outline-none transition-all focus:ring-2 focus:ring-emerald-200">
+                                <button onclick="addSaving()" class="bg-emerald-500 text-white px-6 rounded-2xl hover:bg-emerald-600 transition-all active:scale-95 shadow-lg shadow-emerald-100">
+                                    <i data-lucide="plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-slate-50/50">
+                                <tr>
+                                    <th class="px-6 py-5 font-bold text-gray-400 uppercase tracking-widest text-[10px]">Penyetor</th>
+                                    <th class="px-6 py-5 font-bold text-gray-400 uppercase tracking-widest text-[10px]">Nominal</th>
+                                    <th class="px-6 py-5 font-bold text-gray-400 uppercase tracking-widest text-[10px] text-right">Tindakan</th>
+                                </tr>
+                            </thead>
+                            <tbody id="savings-table-body" class="divide-y divide-gray-50"></tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -181,47 +222,64 @@
 
         let currentUser = null;
         let currentTab = 'checklist';
-        let data = { seserahan: [], vendor: [], prabotan: [], checklist: {} };
+        let data = { seserahan: [], vendor: [], prabotan: [], tabungan: [], checklist: {} };
 
-        // Detail Tahapan Pernikahan (Data Lokal)
         const timeline = [
-            {
-                period: "12-9 Bulan Sebelum",
-                tasks: [
-                    { id: 't1', title: 'Tentukan Anggaran Maksimal', detail: 'Diskusikan total dana dari kedua belah pihak dan orang tua.' },
-                    { id: 't2', title: 'Tentukan Konsep & Tema', detail: 'Tradisional, Nasional, atau Modern? Indoor atau Outdoor?' },
-                    { id: 't3', title: 'Booking Venue Utama', detail: 'Cari gedung atau lokasi yang tersedia di tanggal impian Anda.' },
-                    { id: 't4', title: 'List Tamu Kasar', detail: 'Estimasi jumlah tamu untuk menentukan kapasitas katering dan gedung.' }
-                ]
-            },
-            {
-                period: "8-6 Bulan Sebelum",
-                tasks: [
-                    { id: 't5', title: 'Pilih Vendor Katering', detail: 'Lakukan food tasting dan pastikan paket termasuk dekorasi/piring.' },
-                    { id: 't6', title: 'Booking Fotografer & MUA', detail: 'Vendor populer biasanya penuh 6 bulan sebelum acara.' },
-                    { id: 't7', title: 'Pilih Baju Pengantin', detail: 'Mulai cari penjahit atau tempat sewa baju untuk fitting awal.' },
-                    { id: 't8', title: 'Bentuk Panitia Inti', detail: 'Tunjuk koordinator dari keluarga atau WO profesional.' }
-                ]
-            },
-            {
-                period: "5-3 Bulan Sebelum",
-                tasks: [
-                    { id: 't9', title: 'Administrasi KUA/Sipil', detail: 'Siapkan KTP, KK, Akta Lahir, dan Surat Pengantar NA.' },
-                    { id: 't10', title: 'Pesan Undangan & Souvenir', detail: 'Pilih desain dan pastikan jumlahnya lebih 10% dari daftar tamu.' },
-                    { id: 't11', title: 'Siapkan Mahar & Seserahan', detail: 'Mulai cicil isi box seserahan dan beli perhiasan mahar.' },
-                    { id: 't12', title: 'Tentukan Bridesmaid/Groomsmen', detail: 'Berikan bahan kain atau seragam kepada rekan terdekat.' }
-                ]
-            },
-            {
-                period: "2 Bulan - 1 Bulan Sebelum",
-                tasks: [
-                    { id: 't13', title: 'Final Checklist Vendor', detail: 'Hubungi semua vendor untuk memastikan tidak ada perubahan jadwal.' },
-                    { id: 't14', title: 'Sebar Undangan', detail: 'Mulai kirim undangan fisik dan digital secara bertahap.' },
-                    { id: 't15', title: 'Fitting Terakhir', detail: 'Pastikan baju pas setelah berat badan mungkin berubah karena stres.' },
-                    { id: 't16', title: 'Technical Meeting (TM)', detail: 'Kumpulkan semua vendor di lokasi untuk simulasi hari-H.' }
-                ]
-            }
-        ];
+    {
+        period: "12-9 Bulan Sebelum",
+        tasks: [
+            { id: 't1', title: 'Tentukan Anggaran & Kontribusi', detail: 'Diskusi detail dana dari pihak pria, wanita, dan orang tua.' },
+            { id: 't2', title: 'Pilih Konsep & Warna Utama', detail: 'Modern, adat, atau outdoor? Tentukan palet warna (moodboard).' },
+            { id: 't3', title: 'Booking Venue & Tanggal', detail: 'Venue populer biasanya penuh 1 tahun sebelumnya.' },
+            { id: 't4', title: 'List Calon Tamu', detail: 'Kumpulkan data alamat dan nomor telepon tamu.' }
+        ]
+    },
+    {
+        period: "8-6 Bulan Sebelum",
+        tasks: [
+            { id: 't5', title: 'Pilih Vendor Katering', detail: 'Test food minimal di 3 vendor berbeda.' },
+            { id: 't6', title: 'Fotografer & Videografer', detail: 'Booking untuk hari H dan sesi pre-wedding.' },
+            { id: 't7', title: 'MUA & Busana Pengantin', detail: 'Fitting pertama dan pilih perias untuk keluarga.' },
+            { id: 't8', title: 'Pre-wedding Photoshoot', detail: 'Lakukan sesi foto agar ada waktu untuk editing.' }
+        ]
+    },
+    {
+        period: "5-4 Bulan Sebelum",
+        tasks: [
+            { id: 't9', title: 'Pesan Cincin Kawin', detail: 'Proses pembuatan/grafir nama biasanya memakan waktu 1-2 bulan.' },
+            { id: 't10', title: 'Tentukan Seragam Keluarga', detail: 'Pembelian bahan dan distribusi ke penjahit.' },
+            { id: 't11', title: 'Vendor Dekorasi & Hiburan', detail: 'Diskusi layout pelaminan dan daftar lagu (playlist).' },
+            { id: 't12', title: 'Cek Kesehatan (Pre-marital)', detail: 'Suntik TT (untuk wanita) dan cek kesehatan umum.' }
+        ]
+    },
+    {
+        period: "3 Bulan Sebelum (Krusial)",
+        tasks: [
+            { id: 't13', title: 'Urus Dokumen KUA/Sipil', detail: 'Siapkan surat pengantar RT/RW, foto latar biru, dan berkas asli.' },
+            { id: 't14', title: 'Finalisasi Undangan', detail: 'Cetak dummy, cek penulisan nama, dan naik cetak.' },
+            { id: 't15', title: 'Beli Seserahan & Mahar', detail: 'Lengkapi semua barang seserahan untuk mulai dihias.' },
+            { id: 't16', title: 'Pilih Menu Final', detail: 'Tentukan komposisi gubukan dan menu prasmanan.' }
+        ]
+    },
+    {
+        period: "1 Bulan - H-2 Minggu",
+        tasks: [
+            { id: 't17', title: 'Distribusi Undangan', detail: 'Pastikan semua tamu sudah menerima undangan (fisik/digital).' },
+            { id: 't18', title: 'Technical Meeting (TM)', detail: 'Pertemuan koordinasi seluruh vendor di venue.' },
+            { id: 't19', title: 'Final Fitting', detail: 'Pastikan berat badan stabil dan baju nyaman dipakai.' },
+            { id: 't20', title: 'Konfirmasi Jumlah Tamu', detail: 'Update final RSVP ke vendor katering.' }
+        ]
+    },
+    {
+        period: "H-1 Minggu - Hari H",
+        tasks: [
+            { id: 't21', title: 'Manicure, Pedicure, Spa', detail: 'Relaksasi tubuh sebelum hari yang melelahkan.' },
+            { id: 't22', title: 'Packing Barang Bawaan', detail: 'Siapkan koper berisi baju ganti, alat ibadah, dan obat pribadi.' },
+            { id: 't23', title: 'Gladi Bersih', detail: 'Latihan prosesi akad/pemberkatan dan resepsi.' },
+            { id: 't24', title: 'Istirahat Total', detail: 'Tidur cukup agar wajah segar dan tidak mengantuk.' }
+        ]
+    }
+];
 
         window.onload = () => {
             signInAnonymously(auth).catch(console.error);
@@ -231,21 +289,20 @@
                     document.getElementById('user-status').innerText = `ID: ${user.uid.slice(0,8)}`;
                     initDatabase();
                     document.getElementById('loader').classList.add('hidden');
-                    lucide.createIcons();
                 }
             });
         };
 
         function initDatabase() {
-            if (!currentUser) return;
             onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'checklist', 'status'), snap => {
                 data.checklist = snap.exists() ? snap.data() : {};
                 if (currentTab === 'checklist') renderChecklist();
             });
-            ['seserahan', 'vendor', 'prabotan'].forEach(col => {
+            ['seserahan', 'vendor', 'prabotan', 'tabungan'].forEach(col => {
                 onSnapshot(query(collection(db, 'artifacts', appId, 'public', 'data', col)), snap => {
                     data[col] = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                     if (currentTab === col) renderInventory();
+                    if (currentTab === 'tabungan') renderSavings();
                     updateTotals();
                 });
             });
@@ -256,11 +313,16 @@
             document.querySelectorAll('.sidebar-link').forEach(el => el.classList.remove('active'));
             document.getElementById(`btn-${tabId}`)?.classList.add('active');
             document.querySelectorAll('.section-content').forEach(el => el.classList.remove('active'));
-            document.getElementById('section-title').innerText = tabId === 'checklist' ? 'Panduan Lengkap' : `Manajemen ${tabId}`;
+            
+            const titles = { checklist: 'Panduan Lengkap', seserahan: 'Manajemen Seserahan', vendor: 'Daftar Vendor', prabotan: 'Isi Rumah', tabungan: 'Tabungan Bersama' };
+            document.getElementById('section-title').innerText = titles[tabId];
 
             if (tabId === 'checklist') {
                 document.getElementById('section-checklist').classList.add('active');
                 renderChecklist();
+            } else if (tabId === 'tabungan') {
+                document.getElementById('section-tabungan').classList.add('active');
+                renderSavings();
             } else {
                 document.getElementById('section-inventory').classList.add('active');
                 document.getElementById('inv-title').innerText = `Daftar ${tabId}`;
@@ -274,27 +336,14 @@
             const container = document.getElementById('checklist-timeline');
             container.innerHTML = timeline.map(section => `
                 <div class="space-y-6">
-                    <div class="flex items-center gap-4">
-                        <div class="h-px bg-rose-200 flex-1"></div>
-                        <span class="text-rose-500 font-bold text-xs uppercase tracking-widest bg-rose-50 px-4 py-1.5 rounded-full border border-rose-100">${section.period}</span>
-                        <div class="h-px bg-rose-200 flex-1"></div>
-                    </div>
+                    <div class="flex items-center gap-4"><div class="h-px bg-rose-200 flex-1"></div><span class="text-rose-500 font-bold text-xs uppercase bg-rose-50 px-4 py-1.5 rounded-full border border-rose-100">${section.period}</span><div class="h-px bg-rose-200 flex-1"></div></div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         ${section.tasks.map(task => {
                             const isDone = data.checklist[task.id] || false;
-                            return `
-                                <div onclick="window.toggleCheck('${task.id}')" class="group p-5 bg-white border rounded-3xl flex gap-4 cursor-pointer hover:border-rose-400 hover:shadow-xl hover:shadow-rose-100/50 transition-all duration-300 ${isDone ? 'bg-slate-50 border-slate-200' : 'border-gray-100'}">
-                                    <div class="mt-1">
-                                        <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${isDone ? 'bg-rose-500 border-rose-500 text-white' : 'border-gray-200 group-hover:border-rose-300'}">
-                                            ${isDone ? '<i data-lucide="check" style="width:14px;height:14px"></i>' : ''}
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <h4 class="font-bold text-gray-800 ${isDone ? 'line-through text-gray-400' : ''}">${task.title}</h4>
-                                        <p class="text-xs text-gray-500 mt-1 leading-relaxed">${task.detail}</p>
-                                    </div>
-                                </div>
-                            `;
+                            return `<div onclick="window.toggleCheck('${task.id}')" class="p-5 bg-white border rounded-3xl flex gap-4 cursor-pointer hover:border-rose-400 transition-all ${isDone ? 'bg-slate-50 border-slate-200' : 'border-gray-100'}">
+                                <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center ${isDone ? 'bg-rose-500 border-rose-500 text-white' : 'border-gray-200'}">${isDone ? '<i data-lucide="check" size="14"></i>' : ''}</div>
+                                <div><h4 class="font-bold text-gray-800 ${isDone ? 'line-through text-gray-400' : ''}">${task.title}</h4><p class="text-xs text-gray-500 mt-1">${task.detail}</p></div>
+                            </div>`;
                         }).join('')}
                     </div>
                 </div>
@@ -303,74 +352,57 @@
         }
 
         function renderInventory() {
-            const list = Array.isArray(data[currentTab]) ? data[currentTab] : [];
+            const list = data[currentTab] || [];
             const tbody = document.getElementById('inventory-table-body');
             let sub = 0;
-            if (list.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="3" class="p-16 text-center text-gray-400 italic">Belum ada rincian ditambahkan.</td></tr>`;
-            } else {
-                tbody.innerHTML = list.map(item => {
-                    const price = Number(item.price) || 0;
-                    sub += price;
-                    return `
-                        <tr class="hover:bg-rose-50/20 group transition-all">
-                            <td class="px-6 py-5">
-                                <div class="font-semibold text-gray-800">${item.name}</div>
-                                ${item.link ? `<a href="${item.link}" target="_blank" class="text-[10px] text-rose-400 hover:text-rose-600 flex items-center gap-1 mt-1.5"><i data-lucide="external-link" size="10"></i> Referensi Link</a>` : ''}
-                            </td>
-                            <td class="px-6 py-5 font-mono font-bold text-gray-700 italic">Rp ${price.toLocaleString('id-ID')}</td>
-                            <td class="px-6 py-5 text-right">
-                                <button onclick="removeItem('${item.id}')" class="text-gray-200 hover:text-rose-500 p-2.5 transition-all">
-                                    <i data-lucide="trash-2" size="18"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
-            }
+            tbody.innerHTML = list.length === 0 ? '<tr><td colspan="3" class="p-10 text-center text-gray-400 italic">Belum ada rincian ditambahkan.</td></tr>' : list.map(item => {
+                sub += Number(item.price) || 0;
+                return `<tr class="hover:bg-rose-50/20 group"><td class="px-6 py-5"><div class="font-semibold text-gray-800">${item.name}</div>${item.link ? `<a href="${item.link}" target="_blank" class="text-[10px] text-rose-400 flex items-center gap-1 mt-1"><i data-lucide="external-link" size="10"></i> Link</a>` : ''}</td><td class="px-6 py-5 font-mono font-bold text-gray-700">Rp ${(Number(item.price) || 0).toLocaleString('id-ID')}</td><td class="px-6 py-5 text-right"><button onclick="removeItem('${item.id}')" class="text-gray-200 hover:text-rose-500 p-2"><i data-lucide="trash-2" size="18"></i></button></td></tr>`;
+            }).join('');
             document.getElementById('subtotal-value').innerText = `Rp ${sub.toLocaleString('id-ID')}`;
             lucide.createIcons();
         }
 
-        function updateTotals() {
-            const total = ['seserahan', 'vendor', 'prabotan'].reduce((acc, col) => 
-                acc + (Array.isArray(data[col]) ? data[col].reduce((s, i) => s + (Number(i.price) || 0), 0) : 0), 0);
-            document.getElementById('grand-total').innerText = `Rp ${total.toLocaleString('id-ID')}`;
+        function renderSavings() {
+            const list = data.tabungan || [];
+            const tbody = document.getElementById('savings-table-body');
+            let total = 0;
+            tbody.innerHTML = list.length === 0 ? '<tr><td colspan="3" class="p-10 text-center text-gray-400 italic">Belum ada tabungan.</td></tr>' : list.map(item => {
+                total += Number(item.price) || 0;
+                return `<tr class="hover:bg-emerald-50/20"><td class="px-6 py-5 font-semibold text-gray-800">${item.name}</td><td class="px-6 py-5 font-mono font-bold text-emerald-600">Rp ${(Number(item.price) || 0).toLocaleString('id-ID')}</td><td class="px-6 py-5 text-right"><button onclick="removeItem('${item.id}')" class="text-gray-200 hover:text-rose-500 p-2"><i data-lucide="trash-2" size="18"></i></button></td></tr>`;
+            }).join('');
+            document.getElementById('saving-total-value').innerText = `Rp ${total.toLocaleString('id-ID')}`;
+            lucide.createIcons();
         }
 
-        window.toggleCheck = async (id) => {
-            if (!currentUser) return;
-            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'checklist', 'status'), {
-                ...data.checklist, [id]: !data.checklist[id]
-            });
-        };
+        function updateTotals() {
+            const totalCost = ['seserahan', 'vendor', 'prabotan'].reduce((acc, col) => acc + (data[col] || []).reduce((s, i) => s + (Number(i.price) || 0), 0), 0);
+            const totalSaved = (data.tabungan || []).reduce((s, i) => s + (Number(i.price) || 0), 0);
+            document.getElementById('grand-total').innerText = `Rp ${totalCost.toLocaleString('id-ID')}`;
+            document.getElementById('gap-total').innerText = `Rp ${Math.max(0, totalCost - totalSaved).toLocaleString('id-ID')}`;
+        }
 
+        window.toggleCheck = async (id) => { await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'checklist', 'status'), { ...data.checklist, [id]: !data.checklist[id] }); };
+        
         window.addItem = async () => {
             const n = document.getElementById('inp-name').value;
             const p = document.getElementById('inp-price').value;
             const l = document.getElementById('inp-link').value;
             if (!n || !currentUser) return;
-            try {
-                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', currentTab), {
-                    name: n, price: Number(p) || 0, link: l, date: new Date().toISOString()
-                });
-                document.getElementById('inp-name').value = '';
-                document.getElementById('inp-price').value = '';
-                document.getElementById('inp-link').value = '';
-            } catch (e) { console.error(e); }
+            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', currentTab), { name: n, price: Number(p) || 0, link: l, date: new Date().toISOString() });
+            document.getElementById('inp-name').value = ''; document.getElementById('inp-price').value = ''; document.getElementById('inp-link').value = '';
         };
 
-        window.removeItem = async (id) => {
-            if (!currentUser) return;
-            await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', currentTab, id));
+        window.addSaving = async () => {
+            const n = document.getElementById('inp-saver').value;
+            const p = document.getElementById('inp-save-amount').value;
+            if (!n || !p || !currentUser) return;
+            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'tabungan'), { name: n, price: Number(p) || 0, date: new Date().toISOString() });
+            document.getElementById('inp-saver').value = ''; document.getElementById('inp-save-amount').value = '';
         };
 
-        window.toggleSidebar = () => {
-            document.getElementById('sidebar').classList.toggle('-translate-x-full');
-            document.getElementById('sidebarOverlay').classList.toggle('hidden');
-        };
-
-        window.switchTab = switchTab;
+        window.removeItem = async (id) => { await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', currentTab, id)); };
+        window.toggleSidebar = () => { document.getElementById('sidebar').classList.toggle('-translate-x-full'); document.getElementById('sidebarOverlay').classList.toggle('hidden'); };
     </script>
 </body>
 </html>
