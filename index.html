@@ -73,6 +73,10 @@
                         <i data-lucide="piggy-bank"></i>
                         <span class="font-medium">Tabungan</span>
                     </button>
+                    <button onclick="switchTab('kas')" id="btn-kas" class="sidebar-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-gray-500 hover:bg-rose-50 hover:text-rose-600">
+    <i data-lucide="arrow-up-down"></i>
+    <span class="font-medium">Kas Masuk/Keluar</span>
+</button>
                 </nav>
 
                 <div class="mt-auto p-4 bg-rose-50 rounded-2xl border border-rose-100">
@@ -197,7 +201,60 @@
                         </table>
                     </div>
                 </div>
+                <div id="section-kas" class="section-content max-w-5xl mx-auto space-y-8">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div>
+            <h3 class="text-2xl font-bold text-gray-800 font-serif">Arus Kas (Cashflow)</h3>
+            <p class="text-sm text-gray-500">Catat dana masuk (hadiah/amplop) dan pengeluaran tak terduga.</p>
+        </div>
+        <div class="flex gap-4">
+            <div class="bg-white px-6 py-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+                <div class="p-3 bg-blue-50 text-blue-500 rounded-xl"><i data-lucide="trending-up"></i></div>
+                <div>
+                    <p class="text-[10px] font-bold text-gray-400 uppercase">Saldo Kas</p>
+                    <p id="kas-balance-value" class="text-2xl font-bold text-blue-600">Rp 0</p>
+                </div>
             </div>
+        </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="space-y-1.5">
+            <label class="text-[11px] font-bold text-gray-500 uppercase px-1">Keterangan</label>
+            <input id="inp-kas-desc" type="text" placeholder="Misal: Kado Tante" class="w-full p-3.5 bg-slate-50 border-none rounded-2xl text-sm outline-none focus:ring-2 focus:ring-blue-200">
+        </div>
+        <div class="space-y-1.5">
+            <label class="text-[11px] font-bold text-gray-500 uppercase px-1">Jenis</label>
+            <select id="inp-kas-type" class="w-full p-3.5 bg-slate-50 border-none rounded-2xl text-sm outline-none focus:ring-2 focus:ring-blue-200">
+                <option value="masuk">Uang Masuk (+)</option>
+                <option value="keluar">Uang Keluar (-)</option>
+            </select>
+        </div>
+        <div class="space-y-1.5 md:col-span-2">
+            <label class="text-[11px] font-bold text-gray-500 uppercase px-1">Nominal (Rp)</label>
+            <div class="flex gap-2">
+                <input id="inp-kas-amount" type="number" placeholder="0" class="flex-1 p-3.5 bg-slate-50 border-none rounded-2xl text-sm outline-none focus:ring-2 focus:ring-blue-200">
+                <button onclick="addKas()" class="bg-blue-600 text-white px-6 rounded-2xl hover:bg-blue-700 transition-all active:scale-95">
+                    <i data-lucide="plus"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+        <table class="w-full text-left text-sm">
+            <thead class="bg-slate-50/50">
+                <tr>
+                    <th class="px-6 py-5 font-bold text-gray-400 uppercase tracking-widest text-[10px]">Keterangan</th>
+                    <th class="px-6 py-5 font-bold text-gray-400 uppercase tracking-widest text-[10px]">Jenis</th>
+                    <th class="px-6 py-5 font-bold text-gray-400 uppercase tracking-widest text-[10px]">Nominal</th>
+                    <th class="px-6 py-5 font-bold text-gray-400 uppercase tracking-widest text-[10px] text-right">Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="kas-table-body" class="divide-y divide-gray-50"></tbody>
+        </table>
+    </div>
+</div>
         </main>
     </div>
 
@@ -222,7 +279,7 @@
 
         let currentUser = null;
         let currentTab = 'checklist';
-        let data = { seserahan: [], vendor: [], prabotan: [], tabungan: [], checklist: {} };
+      let data = { seserahan: [], vendor: [], prabotan: [], tabungan: [], checklist: {}, kas: [] }; 
 
         const timeline = [
     {
@@ -294,43 +351,66 @@
         };
 
         function initDatabase() {
-            onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'checklist', 'status'), snap => {
-                data.checklist = snap.exists() ? snap.data() : {};
-                if (currentTab === 'checklist') renderChecklist();
-            });
-            ['seserahan', 'vendor', 'prabotan', 'tabungan'].forEach(col => {
-                onSnapshot(query(collection(db, 'artifacts', appId, 'public', 'data', col)), snap => {
-                    data[col] = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                    if (currentTab === col) renderInventory();
-                    if (currentTab === 'tabungan') renderSavings();
-                    updateTotals();
-                });
-            });
-        }
+    onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'checklist', 'status'), snap => {
+        data.checklist = snap.exists() ? snap.data() : {};
+        if (currentTab === 'checklist') renderChecklist();
+    });
+
+    ['seserahan', 'vendor', 'prabotan', 'tabungan', 'kas'].forEach(col => {
+        onSnapshot(query(collection(db, 'artifacts', appId, 'public', 'data', col)), snap => {
+            data[col] = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            
+            // Trigger render sesuai tab yang aktif
+            if (currentTab === 'kas') renderKas();
+            if (currentTab === 'tabungan') renderSavings();
+            if (['seserahan', 'vendor', 'prabotan'].includes(currentTab)) renderInventory();
+            
+            updateTotals();
+        });
+    });
+}
 
         window.switchTab = (tabId) => {
-            currentTab = tabId;
-            document.querySelectorAll('.sidebar-link').forEach(el => el.classList.remove('active'));
-            document.getElementById(`btn-${tabId}`)?.classList.add('active');
-            document.querySelectorAll('.section-content').forEach(el => el.classList.remove('active'));
-            
-            const titles = { checklist: 'Panduan Lengkap', seserahan: 'Manajemen Seserahan', vendor: 'Daftar Vendor', prabotan: 'Isi Rumah', tabungan: 'Tabungan Bersama' };
-            document.getElementById('section-title').innerText = titles[tabId];
+    currentTab = tabId;
+    
+    // Reset visual sidebar
+    document.querySelectorAll('.sidebar-link').forEach(el => el.classList.remove('active'));
+    document.getElementById(`btn-${tabId}`)?.classList.add('active');
+    
+    // Sembunyikan semua section
+    document.querySelectorAll('.section-content').forEach(el => el.classList.remove('active'));
+    
+    // Update Judul
+    const titles = { 
+        checklist: 'Panduan Lengkap', 
+        seserahan: 'Manajemen Seserahan', 
+        vendor: 'Daftar Vendor', 
+        prabotan: 'Isi Rumah', 
+        tabungan: 'Tabungan Bersama', 
+        kas: 'Arus Kas' 
+    };
+    document.getElementById('section-title').innerText = titles[tabId];
+    
+    // Logika pemilihan section (PENTING)
+    if (tabId === 'kas') {
+        document.getElementById('section-kas').classList.add('active');
+        renderKas();
+    } else if (tabId === 'checklist') {
+        document.getElementById('section-checklist').classList.add('active');
+        renderChecklist();
+    } else if (tabId === 'tabungan') {
+        document.getElementById('section-tabungan').classList.add('active');
+        renderSavings();
+    } else {
+        // Ini hanya untuk seserahan, vendor, dan prabotan
+        document.getElementById('section-inventory').classList.add('active');
+        document.getElementById('inv-title').innerText = `Daftar ${tabId}`;
+        document.getElementById('subtotal-label').innerText = `Subtotal ${tabId}`;
+        renderInventory();
+    }
 
-            if (tabId === 'checklist') {
-                document.getElementById('section-checklist').classList.add('active');
-                renderChecklist();
-            } else if (tabId === 'tabungan') {
-                document.getElementById('section-tabungan').classList.add('active');
-                renderSavings();
-            } else {
-                document.getElementById('section-inventory').classList.add('active');
-                document.getElementById('inv-title').innerText = `Daftar ${tabId}`;
-                document.getElementById('subtotal-label').innerText = `Subtotal ${tabId}`;
-                renderInventory();
-            }
-            if (window.innerWidth < 1024) toggleSidebar();
-        };
+    if (window.innerWidth < 1024) toggleSidebar();
+};
 
         function renderChecklist() {
             const container = document.getElementById('checklist-timeline');
@@ -393,6 +473,7 @@
             document.getElementById('inp-name').value = ''; document.getElementById('inp-price').value = ''; document.getElementById('inp-link').value = '';
         };
 
+
         window.addSaving = async () => {
             const n = document.getElementById('inp-saver').value;
             const p = document.getElementById('inp-save-amount').value;
@@ -400,6 +481,52 @@
             await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'tabungan'), { name: n, price: Number(p) || 0, date: new Date().toISOString() });
             document.getElementById('inp-saver').value = ''; document.getElementById('inp-save-amount').value = '';
         };
+        window.addKas = async () => {
+    const desc = document.getElementById('inp-kas-desc').value;
+    const type = document.getElementById('inp-kas-type').value;
+    const amount = document.getElementById('inp-kas-amount').value;
+    if (!desc || !amount || !currentUser) return;
+
+    await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'kas'), {
+        name: desc,
+        type: type,
+        price: Number(amount) || 0,
+        date: new Date().toISOString()
+    });
+
+    document.getElementById('inp-kas-desc').value = '';
+    document.getElementById('inp-kas-amount').value = '';
+};
+
+function renderKas() {
+    const list = data.kas || [];
+    const tbody = document.getElementById('kas-table-body');
+    let balance = 0;
+
+    tbody.innerHTML = list.length === 0 ? '<tr><td colspan="4" class="p-10 text-center text-gray-400 italic">Belum ada mutasi kas.</td></tr>' : list.map(item => {
+        const isMasuk = item.type === 'masuk';
+        balance += isMasuk ? item.price : -item.price;
+
+        return `
+            <tr class="hover:bg-slate-50/50">
+                <td class="px-6 py-5 font-semibold text-gray-800">${item.name}</td>
+                <td class="px-6 py-5">
+                    <span class="px-2 py-1 rounded-md text-[10px] font-bold uppercase ${isMasuk ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600'}">
+                        ${item.type}
+                    </span>
+                </td>
+                <td class="px-6 py-5 font-mono font-bold ${isMasuk ? 'text-emerald-600' : 'text-rose-600'}">
+                    ${isMasuk ? '+' : '-'} Rp ${item.price.toLocaleString('id-ID')}
+                </td>
+                <td class="px-6 py-5 text-right">
+                    <button onclick="removeItem('${item.id}')" class="text-gray-200 hover:text-rose-500 p-2"><i data-lucide="trash-2" size="18"></i></button>
+                </td>
+            </tr>`;
+    }).join('');
+
+    document.getElementById('kas-balance-value').innerText = `Rp ${balance.toLocaleString('id-ID')}`;
+    lucide.createIcons();
+}
 
         window.removeItem = async (id) => { await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', currentTab, id)); };
         window.toggleSidebar = () => { document.getElementById('sidebar').classList.toggle('-translate-x-full'); document.getElementById('sidebarOverlay').classList.toggle('hidden'); };
