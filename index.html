@@ -8,6 +8,24 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
+    /* Modal Preview Foto */
+.modal-photo {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+.modal-photo.active { display: flex; }
+.modal-photo img {
+    max-width: 90%;
+    max-height: 90%;
+    border-radius: 12px;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+}
         body { font-family: 'Inter', sans-serif; }
         .font-serif { font-family: 'Playfair Display', serif; }
         .sidebar-link.active {
@@ -201,40 +219,46 @@
                         </table>
                     </div>
                 </div>
-                <div id="section-kas" class="section-content max-w-5xl mx-auto space-y-8">
+<div id="section-kas" class="section-content max-w-5xl mx-auto space-y-8">
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
             <h3 class="text-2xl font-bold text-gray-800 font-serif">Arus Kas (Cashflow)</h3>
-            <p class="text-sm text-gray-500">Catat dana masuk (hadiah/amplop) dan pengeluaran tak terduga.</p>
+            <p class="text-sm text-gray-500">Catat dana masuk dan pengeluaran dengan bukti nota.</p>
         </div>
-        <div class="flex gap-4">
-            <div class="bg-white px-6 py-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
-                <div class="p-3 bg-blue-50 text-blue-500 rounded-xl"><i data-lucide="trending-up"></i></div>
-                <div>
-                    <p class="text-[10px] font-bold text-gray-400 uppercase">Saldo Kas</p>
-                    <p id="kas-balance-value" class="text-2xl font-bold text-blue-600">Rp 0</p>
-                </div>
+        <div class="bg-white px-6 py-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+            <div class="p-3 bg-blue-50 text-blue-500 rounded-xl"><i data-lucide="trending-up"></i></div>
+            <div>
+                <p class="text-[10px] font-bold text-gray-400 uppercase">Saldo Kas</p>
+                <p id="kas-balance-value" class="text-2xl font-bold text-blue-600">Rp 0</p>
             </div>
         </div>
     </div>
 
-    <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm grid grid-cols-1 md:grid-cols-5 gap-4">
         <div class="space-y-1.5">
             <label class="text-[11px] font-bold text-gray-500 uppercase px-1">Keterangan</label>
-            <input id="inp-kas-desc" type="text" placeholder="Misal: Kado Tante" class="w-full p-3.5 bg-slate-50 border-none rounded-2xl text-sm outline-none focus:ring-2 focus:ring-blue-200">
+            <input id="inp-kas-desc" type="text" placeholder="Misal: Bayar Tenda" class="w-full p-3 bg-slate-50 border-none rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-200">
         </div>
         <div class="space-y-1.5">
             <label class="text-[11px] font-bold text-gray-500 uppercase px-1">Jenis</label>
-            <select id="inp-kas-type" class="w-full p-3.5 bg-slate-50 border-none rounded-2xl text-sm outline-none focus:ring-2 focus:ring-blue-200">
+            <select id="inp-kas-type" class="w-full p-3 bg-slate-50 border-none rounded-xl text-sm outline-none">
                 <option value="masuk">Uang Masuk (+)</option>
                 <option value="keluar">Uang Keluar (-)</option>
             </select>
         </div>
-        <div class="space-y-1.5 md:col-span-2">
+        <div class="space-y-1.5">
+            <label class="text-[11px] font-bold text-gray-500 uppercase px-1">Tanggal</label>
+            <input id="inp-kas-date" type="date" class="w-full p-3 bg-slate-50 border-none rounded-xl text-sm outline-none">
+        </div>
+        <div class="space-y-1.5">
+            <label class="text-[11px] font-bold text-gray-500 uppercase px-1">Foto Nota</label>
+            <input id="inp-kas-file" type="file" accept="image/*" class="w-full text-[10px] text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-full file:border-0 file:bg-blue-50 file:text-blue-700">
+        </div>
+        <div class="space-y-1.5">
             <label class="text-[11px] font-bold text-gray-500 uppercase px-1">Nominal (Rp)</label>
             <div class="flex gap-2">
-                <input id="inp-kas-amount" type="number" placeholder="0" class="flex-1 p-3.5 bg-slate-50 border-none rounded-2xl text-sm outline-none focus:ring-2 focus:ring-blue-200">
-                <button onclick="addKas()" class="bg-blue-600 text-white px-6 rounded-2xl hover:bg-blue-700 transition-all active:scale-95">
+                <input id="inp-kas-amount" type="number" placeholder="0" class="flex-1 p-3 bg-slate-50 border-none rounded-xl text-sm outline-none">
+                <button onclick="addKas()" id="btn-add-kas" class="bg-blue-600 text-white px-5 rounded-xl hover:bg-blue-700 transition-all active:scale-95">
                     <i data-lucide="plus"></i>
                 </button>
             </div>
@@ -245,7 +269,7 @@
         <table class="w-full text-left text-sm">
             <thead class="bg-slate-50/50">
                 <tr>
-                    <th class="px-6 py-5 font-bold text-gray-400 uppercase tracking-widest text-[10px]">Keterangan</th>
+                    <th class="px-6 py-5 font-bold text-gray-400 uppercase tracking-widest text-[10px]">Tanggal & Keterangan</th>
                     <th class="px-6 py-5 font-bold text-gray-400 uppercase tracking-widest text-[10px]">Jenis</th>
                     <th class="px-6 py-5 font-bold text-gray-400 uppercase tracking-widest text-[10px]">Nominal</th>
                     <th class="px-6 py-5 font-bold text-gray-400 uppercase tracking-widest text-[10px] text-right">Aksi</th>
@@ -257,7 +281,14 @@
 </div>
         </main>
     </div>
-
+<div id="modal-photo" class="modal-photo" onclick="closePreview()">
+    <div class="relative max-w-4xl w-full flex justify-center" onclick="event.stopPropagation()">
+        <img id="modal-img" src="" alt="Nota Preview">
+        <button onclick="closePreview()" class="absolute -top-10 right-0 text-white flex items-center gap-2">
+            <i data-lucide="x"></i> Tutup
+        </button>
+    </div>
+</div>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
@@ -430,6 +461,38 @@
             `).join('');
             lucide.createIcons();
         }
+        // Fungsi untuk kompres foto otomatis
+const compressImage = (file, maxWidth = 800, quality = 0.7) => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+
+                // Hitung rasio agar foto tetap proporsional
+                if (width > maxWidth) {
+                    height = (maxWidth / width) * height;
+                    width = maxWidth;
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // Ubah menjadi Base64 dengan kualitas 0.7 (70%)
+                const compressedBase64 = canvas.toDataURL('image/jpeg', quality);
+                resolve(compressedBase64);
+            };
+        };
+        reader.onerror = (error) => reject(error);
+    });
+};
 
         function renderInventory() {
             const list = data[currentTab] || [];
@@ -481,25 +544,65 @@
             await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'tabungan'), { name: n, price: Number(p) || 0, date: new Date().toISOString() });
             document.getElementById('inp-saver').value = ''; document.getElementById('inp-save-amount').value = '';
         };
-        window.addKas = async () => {
+        // Fungsi mengubah file gambar menjadi string teks (Base64)
+const toBase64 = file => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+});
+
+window.addKas = async () => {
     const desc = document.getElementById('inp-kas-desc').value;
     const type = document.getElementById('inp-kas-type').value;
     const amount = document.getElementById('inp-kas-amount').value;
-    if (!desc || !amount || !currentUser) return;
+    const dateManual = document.getElementById('inp-kas-date').value;
+    const fileInput = document.getElementById('inp-kas-file');
+    const btn = document.getElementById('btn-add-kas');
 
-    await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'kas'), {
-        name: desc,
-        type: type,
-        price: Number(amount) || 0,
-        date: new Date().toISOString()
-    });
+    if (!desc || !amount || !currentUser) return alert("Keterangan dan nominal wajib diisi!");
 
-    document.getElementById('inp-kas-desc').value = '';
-    document.getElementById('inp-kas-amount').value = '';
+    btn.disabled = true;
+    // Animasi loading sederhana
+    btn.innerHTML = '<div class="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>';
+
+    try {
+        let photoData = "";
+        
+        if (fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+            // Kompres foto sebelum simpan
+            photoData = await compressImage(file, 800, 0.6); // Max lebar 800px, kualitas 60%
+        }
+
+        const finalDate = dateManual || new Date().toISOString().split('T')[0];
+
+        await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'kas'), {
+            name: desc,
+            type: type,
+            price: Number(amount) || 0,
+            date: finalDate,
+            photo: photoData
+        });
+
+        // Reset Form
+        document.getElementById('inp-kas-desc').value = '';
+        document.getElementById('inp-kas-amount').value = '';
+        document.getElementById('inp-kas-file').value = '';
+        document.getElementById('inp-kas-date').value = '';
+        
+    } catch (err) {
+        console.error("Gagal simpan:", err);
+        alert("Terjadi kesalahan saat menyimpan data.");
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i data-lucide="plus"></i>';
+        lucide.createIcons();
+    }
 };
-
-function renderKas() {
+window.renderKas = () => {
     const list = data.kas || [];
+    list.sort((a, b) => new Date(b.date) - new Date(a.date));
     const tbody = document.getElementById('kas-table-body');
     let balance = 0;
 
@@ -509,7 +612,16 @@ function renderKas() {
 
         return `
             <tr class="hover:bg-slate-50/50">
-                <td class="px-6 py-5 font-semibold text-gray-800">${item.name}</td>
+                <td class="px-6 py-5">
+                    <div class="text-[10px] text-gray-400 font-bold uppercase mb-0.5">${item.date || '-'}</div>
+                    <div class="font-semibold text-gray-800 flex items-center gap-2">
+                        ${item.name}
+                        ${item.photo ? `
+                            <button onclick="showPreview('${item.photo}')" class="text-blue-500 hover:scale-110 transition-transform">
+                                <i data-lucide="image" size="14"></i>
+                            </button>` : ''}
+                    </div>
+                </td>
                 <td class="px-6 py-5">
                     <span class="px-2 py-1 rounded-md text-[10px] font-bold uppercase ${isMasuk ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600'}">
                         ${item.type}
@@ -526,7 +638,24 @@ function renderKas() {
 
     document.getElementById('kas-balance-value').innerText = `Rp ${balance.toLocaleString('id-ID')}`;
     lucide.createIcons();
-}
+};
+
+window.showPreview = (base64) => {
+    const modalImg = document.getElementById('modal-img');
+    const modalDiv = document.getElementById('modal-photo');
+    
+    if (modalImg && modalDiv) {
+        modalImg.src = base64;
+        modalDiv.classList.add('active');
+    } else {
+        console.error("Elemen modal tidak ditemukan di HTML!");
+    }
+};
+
+window.closePreview = () => {
+    const modalDiv = document.getElementById('modal-photo');
+    if (modalDiv) modalDiv.classList.remove('active');
+};
 
         window.removeItem = async (id) => { await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', currentTab, id)); };
         window.toggleSidebar = () => { document.getElementById('sidebar').classList.toggle('-translate-x-full'); document.getElementById('sidebarOverlay').classList.toggle('hidden'); };
