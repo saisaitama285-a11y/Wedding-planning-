@@ -126,55 +126,75 @@
                     <div id="checklist-timeline" class="space-y-12"></div>
                 </div>
 
-                <div id="section-inventory" class="section-content max-w-5xl mx-auto space-y-8">
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                        <div>
-                            <h3 id="inv-title" class="text-2xl font-bold text-gray-800 font-serif capitalize">Manajemen Item</h3>
-                            <p class="text-sm text-gray-500">Kelola rincian biaya dan link referensi di sini.</p>
-                        </div>
-                        <div class="bg-white px-6 py-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
-                            <div class="p-3 bg-rose-50 text-rose-500 rounded-xl"><i data-lucide="calculator"></i></div>
-                            <div>
-                                <p id="subtotal-label" class="text-[10px] font-bold text-gray-400 uppercase">Subtotal</p>
-                                <p id="subtotal-value" class="text-2xl font-bold text-gray-800">Rp 0</p>
-                            </div>
-                        </div>
-                    </div>
+<div id="section-inventory" class="section-content max-w-5xl mx-auto space-y-8">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div>
+            <h3 id="inv-title" class="text-2xl font-bold text-gray-800 font-serif capitalize">Manajemen Item</h3>
+            <p class="text-sm text-gray-500">Kelola rincian, foto barang, dan status pembelian.</p>
+        </div>
+        <div class="bg-white px-6 py-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+            <div class="p-3 bg-rose-50 text-rose-500 rounded-xl"><i data-lucide="calculator"></i></div>
+            <div>
+                <p id="subtotal-label" class="text-[10px] font-bold text-gray-400 uppercase">Subtotal Belum Dibeli</p>
+                <p id="subtotal-value" class="text-2xl font-bold text-gray-800">Rp 0</p>
+            </div>
+        </div>
+    </div>
 
-                    <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm grid grid-cols-1 md:grid-cols-3 gap-5">
-                        <div class="space-y-1.5">
-                            <label class="text-[11px] font-bold text-gray-500 uppercase px-1">Nama Item/Kebutuhan</label>
-                            <input id="inp-name" type="text" placeholder="Misal: Catering Utama" class="w-full p-3.5 bg-slate-50 border-none rounded-2xl text-sm outline-none transition-all focus:ring-2 focus:ring-rose-200">
-                        </div>
-                        <div class="space-y-1.5">
-                            <label class="text-[11px] font-bold text-gray-500 uppercase px-1">Link/Lokasi</label>
-                            <input id="inp-link" type="text" placeholder="https://..." class="w-full p-3.5 bg-slate-50 border-none rounded-2xl text-sm outline-none transition-all focus:ring-2 focus:ring-rose-200">
-                        </div>
-                        <div class="space-y-1.5">
-                            <label class="text-[11px] font-bold text-gray-500 uppercase px-1">Biaya (Rp)</label>
-                            <div class="flex gap-2">
-                                <input id="inp-price" type="number" placeholder="0" class="flex-1 p-3.5 bg-slate-50 border-none rounded-2xl text-sm outline-none transition-all focus:ring-2 focus:ring-rose-200">
-                                <button onclick="addItem()" class="bg-rose-500 text-white px-6 rounded-2xl hover:bg-rose-600 transition-all active:scale-95 shadow-lg shadow-rose-100">
-                                    <i data-lucide="plus"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+<div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
+    <div class="space-y-1.5 lg:col-span-2">
+        <label class="text-[11px] font-bold text-gray-500 uppercase px-1">Nama Barang</label>
+        <input id="inp-name" type="text" placeholder="Misal: Cincin" class="w-full p-3 bg-slate-50 border-none rounded-xl text-sm outline-none focus:ring-2 focus:ring-rose-200">
+    </div>
+    
+    <div id="cat-container" class="space-y-1.5">
+        <label class="text-[11px] font-bold text-gray-500 uppercase px-1">Kategori</label>
+        <select id="inp-cat" class="w-full p-3 bg-slate-50 border-none rounded-xl text-sm outline-none">
+            <option value="Umum">Umum</option>
+            <option value="Pakaian">Pakaian</option>
+            <option value="Skincare/Makeup">Skincare/Makeup</option>
+            <option value="Perlengkapan Ibadah">Perlengkapan Ibadah</option>
+            <option value="Perhiasan">Perhiasan</option>
+        </select>
+    </div>
 
-                    <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-                        <table class="w-full text-left text-sm">
-                            <thead class="bg-slate-50/50">
-                                <tr>
-                                    <th class="px-6 py-5 font-bold text-gray-400 uppercase tracking-widest text-[10px]">Detail Deskripsi</th>
-                                    <th class="px-6 py-5 font-bold text-gray-400 uppercase tracking-widest text-[10px]">Estimasi Harga</th>
-                                    <th class="px-6 py-5 font-bold text-gray-400 uppercase tracking-widest text-[10px] text-right">Tindakan</th>
-                                </tr>
-                            </thead>
-                            <tbody id="inventory-table-body" class="divide-y divide-gray-50"></tbody>
-                        </table>
-                    </div>
-                </div>
+    <div class="space-y-1.5">
+        <label class="text-[11px] font-bold text-gray-500 uppercase px-1">Harga (Rp)</label>
+        <input id="inp-price" type="number" placeholder="0" class="w-full p-3 bg-slate-50 border-none rounded-xl text-sm outline-none">
+    </div>
 
+    <div class="space-y-1.5">
+        <label class="text-[11px] font-bold text-gray-500 uppercase px-1">Link & Foto</label>
+        <div class="flex gap-2">
+            <input id="inp-link" type="url" placeholder="https://..." class="flex-1 p-3 bg-slate-50 border-none rounded-xl text-sm outline-none focus:ring-2 focus:ring-rose-200">
+            <label class="cursor-pointer bg-rose-50 text-rose-500 p-3 rounded-xl hover:bg-rose-100 transition-all">
+                <i data-lucide="camera" size="20"></i>
+                <input id="inp-file" type="file" accept="image/*" class="hidden">
+            </label>
+        </div>
+    </div>
+
+    <div class="space-y-1.5 flex items-end">
+        <button onclick="addItem()" id="btn-add-item" class="w-full bg-rose-500 text-white h-[46px] rounded-xl hover:bg-rose-600 flex items-center justify-center shadow-lg shadow-rose-100 transition-all active:scale-95">
+            <i data-lucide="plus" class="mr-2"></i> Tambah
+        </button>
+    </div>
+</div>
+
+    <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+        <table class="w-full text-left text-sm">
+           <thead class="bg-slate-50/50">
+    <tr>
+        <th class="px-6 py-5 font-bold text-gray-400 uppercase tracking-widest text-[10px] w-16">Beli</th>
+        <th class="px-6 py-5 font-bold text-gray-400 uppercase tracking-widest text-[10px]">Detail Barang</th>
+        <th class="px-6 py-5 font-bold text-gray-400 uppercase tracking-widest text-[10px]">Tautan</th> <th class="px-6 py-5 font-bold text-gray-400 uppercase tracking-widest text-[10px]">Harga</th>
+        <th class="px-6 py-5 font-bold text-gray-400 uppercase tracking-widest text-[10px] text-right">Aksi</th>
+    </tr>
+</thead>
+            <tbody id="inventory-table-body" class="divide-y divide-gray-50"></tbody>
+        </table>
+    </div>
+</div>
                 <div id="section-tabungan" class="section-content max-w-5xl mx-auto space-y-8">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                         <div>
@@ -494,29 +514,7 @@ const compressImage = (file, maxWidth = 800, quality = 0.7) => {
     });
 };
 
-        function renderInventory() {
-            const list = data[currentTab] || [];
-            const tbody = document.getElementById('inventory-table-body');
-            let sub = 0;
-            tbody.innerHTML = list.length === 0 ? '<tr><td colspan="3" class="p-10 text-center text-gray-400 italic">Belum ada rincian ditambahkan.</td></tr>' : list.map(item => {
-                sub += Number(item.price) || 0;
-                return `<tr class="hover:bg-rose-50/20 group"><td class="px-6 py-5"><div class="font-semibold text-gray-800">${item.name}</div>${item.link ? `<a href="${item.link}" target="_blank" class="text-[10px] text-rose-400 flex items-center gap-1 mt-1"><i data-lucide="external-link" size="10"></i> Link</a>` : ''}</td><td class="px-6 py-5 font-mono font-bold text-gray-700">Rp ${(Number(item.price) || 0).toLocaleString('id-ID')}</td><td class="px-6 py-5 text-right"><button onclick="removeItem('${item.id}')" class="text-gray-200 hover:text-rose-500 p-2"><i data-lucide="trash-2" size="18"></i></button></td></tr>`;
-            }).join('');
-            document.getElementById('subtotal-value').innerText = `Rp ${sub.toLocaleString('id-ID')}`;
-            lucide.createIcons();
-        }
-
-        function renderSavings() {
-            const list = data.tabungan || [];
-            const tbody = document.getElementById('savings-table-body');
-            let total = 0;
-            tbody.innerHTML = list.length === 0 ? '<tr><td colspan="3" class="p-10 text-center text-gray-400 italic">Belum ada tabungan.</td></tr>' : list.map(item => {
-                total += Number(item.price) || 0;
-                return `<tr class="hover:bg-emerald-50/20"><td class="px-6 py-5 font-semibold text-gray-800">${item.name}</td><td class="px-6 py-5 font-mono font-bold text-emerald-600">Rp ${(Number(item.price) || 0).toLocaleString('id-ID')}</td><td class="px-6 py-5 text-right"><button onclick="removeItem('${item.id}')" class="text-gray-200 hover:text-rose-500 p-2"><i data-lucide="trash-2" size="18"></i></button></td></tr>`;
-            }).join('');
-            document.getElementById('saving-total-value').innerText = `Rp ${total.toLocaleString('id-ID')}`;
-            lucide.createIcons();
-        }
+        
 
         function updateTotals() {
             const totalCost = ['seserahan', 'vendor', 'prabotan'].reduce((acc, col) => acc + (data[col] || []).reduce((s, i) => s + (Number(i.price) || 0), 0), 0);
@@ -527,15 +525,176 @@ const compressImage = (file, maxWidth = 800, quality = 0.7) => {
 
         window.toggleCheck = async (id) => { await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'checklist', 'status'), { ...data.checklist, [id]: !data.checklist[id] }); };
         
-        window.addItem = async () => {
-            const n = document.getElementById('inp-name').value;
-            const p = document.getElementById('inp-price').value;
-            const l = document.getElementById('inp-link').value;
-            if (!n || !currentUser) return;
-            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', currentTab), { name: n, price: Number(p) || 0, link: l, date: new Date().toISOString() });
-            document.getElementById('inp-name').value = ''; document.getElementById('inp-price').value = ''; document.getElementById('inp-link').value = '';
-        };
+        // Tambahkan fungsi untuk update status ceklis
+window.toggleItemStatus = async (id, currentStatus) => {
+    const { updateDoc, doc } = await import("https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js");
+    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', currentTab, id), {
+        isDone: !currentStatus
+    });
+};
 
+window.addItem = async () => {
+    const btn = document.getElementById('btn-add-item');
+    const n = document.getElementById('inp-name').value;
+    const p = document.getElementById('inp-price').value;
+    const l = document.getElementById('inp-link').value;
+    const cat = document.getElementById('inp-cat').value;
+    const fileInput = document.getElementById('inp-file');
+    
+    // Validasi Dasar: Nama tidak boleh kosong
+    if (!n) {
+        alert("Nama barang harus diisi!");
+        return;
+    }
+    
+    if (!currentUser) {
+        alert("Koneksi terputus, silakan refresh halaman.");
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<div class="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></div>';
+
+    try {
+        let photoBase64 = "";
+        // Cek apakah ada file foto yang dipilih
+        if (fileInput && fileInput.files && fileInput.files[0]) {
+            try {
+                // Menggunakan fungsi compressImage yang sudah ada di kode Anda
+                photoBase64 = await compressImage(fileInput.files[0], 600, 0.4);
+            } catch (imgErr) {
+                console.warn("Gagal mengompres gambar, lanjut tanpa foto:", imgErr);
+            }
+        }
+
+        const { addDoc, collection } = await import("https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js");
+        
+        // Proses simpan ke Firestore
+        await addDoc(collection(db, 'artifacts', appId, 'public', 'data', currentTab), { 
+            name: n, 
+            price: Number(p) || 0, 
+            link: l || "", 
+            category: currentTab === 'seserahan' ? cat : 'Umum',
+            photo: photoBase64, 
+            isDone: false,
+            date: new Date().toISOString() 
+        });
+
+        // Reset form setelah berhasil
+        document.getElementById('inp-name').value = ''; 
+        document.getElementById('inp-price').value = '';
+        document.getElementById('inp-link').value = '';
+        if (fileInput) fileInput.value = ''; 
+        
+        alert("Data berhasil ditambahkan!");
+
+    } catch (err) {
+        console.error("Error detail saat simpan:", err);
+        alert("Gagal menyimpan data. Pastikan koneksi internet stabil.");
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i data-lucide="plus" class="mr-2"></i> Tambah';
+        lucide.createIcons();
+    }
+};
+// Perbaikan fungsi render untuk menampilkan foto & link klik
+function renderInventory() {
+    const list = data[currentTab] || [];
+    const tbody = document.getElementById('inventory-table-body');
+    let sub = 0;
+
+    // Sorting: Barang yang belum dibeli muncul di atas
+    list.sort((a, b) => (a.isDone - b.isDone));
+    
+    tbody.innerHTML = list.length === 0 ? 
+        '<tr><td colspan="5" class="p-10 text-center text-gray-400 italic">Belum ada data.</td></tr>' : 
+        list.map(item => {
+            if (!item.isDone) sub += Number(item.price) || 0;
+            
+            return `
+                <tr class="hover:bg-slate-50/50 transition-colors ${item.isDone ? 'opacity-60 bg-slate-50' : ''}">
+                    <td class="px-6 py-5">
+                        <button onclick="toggleItemStatus('${item.id}', ${item.isDone})" class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${item.isDone ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-gray-200'}">
+                            ${item.isDone ? '<i data-lucide="check" size="14"></i>' : ''}
+                        </button>
+                    </td>
+                    <td class="px-6 py-5">
+                        <div class="flex items-center gap-3">
+                            <div onclick="${item.photo ? `showPreview('${item.photo}')` : ''}" class="w-12 h-12 rounded-lg bg-gray-100 flex-shrink-0 overflow-hidden border border-gray-100 cursor-pointer hover:opacity-80 transition-opacity">
+                                ${item.photo ? `<img src="${item.photo}" class="w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-gray-300"><i data-lucide="image" size="16"></i></div>`}
+                            </div>
+                            <div>
+                                <p class="font-bold text-gray-800 ${item.isDone ? 'line-through' : ''}">${item.name}</p>
+                                <p class="text-[10px] text-gray-400 font-bold uppercase">${item.category || 'Umum'}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-5">
+                        ${item.link ? `
+                            <a href="${item.link.startsWith('http') ? item.link : 'https://' + item.link}" target="_blank" class="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-all text-xs font-bold border border-blue-100">
+                                <i data-lucide="external-link" size="14"></i> Beli
+                            </a>
+                        ` : '<span class="text-gray-300 text-xs italic">Tanpa Link</span>'}
+                    </td>
+                    <td class="px-6 py-5 font-mono font-bold text-gray-700">
+                        Rp ${(Number(item.price) || 0).toLocaleString('id-ID')}
+                    </td>
+                    <td class="px-6 py-5 text-right">
+                        <button onclick="removeItem('${item.id}')" class="text-gray-300 hover:text-rose-500 transition-colors">
+                            <i data-lucide="trash-2" size="18"></i>
+                        </button>
+                    </td>
+                </tr>`;
+        }).join('');
+    
+    document.getElementById('subtotal-value').innerText = `Rp ${sub.toLocaleString('id-ID')}`;
+    lucide.createIcons();
+}
+
+        window.renderSavings = () => {
+    const list = data.tabungan || [];
+    // Urutkan berdasarkan tanggal terbaru
+    list.sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    const tbody = document.getElementById('savings-table-body');
+    let total = 0;
+
+    tbody.innerHTML = list.length === 0 ? 
+        '<tr><td colspan="3" class="p-10 text-center text-gray-400 italic">Belum ada catatan tabungan.</td></tr>' : 
+        list.map(item => {
+            const nominal = Number(item.price) || 0;
+            total += nominal;
+            
+            return `
+                <tr class="hover:bg-slate-50/50 transition-colors">
+                    <td class="px-6 py-5">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                                <i data-lucide="user" size="18"></i>
+                            </div>
+                            <div>
+                                <p class="font-bold text-gray-800">${item.name}</p>
+                                <p class="text-[10px] text-gray-400 font-bold uppercase">${item.date ? new Date(item.date).toLocaleDateString('id-ID') : '-'}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-5 font-mono font-bold text-emerald-600">
+                        Rp ${nominal.toLocaleString('id-ID')}
+                    </td>
+                    <td class="px-6 py-5 text-right">
+                        <button onclick="removeItem('${item.id}')" class="text-gray-300 hover:text-rose-500 transition-colors p-2">
+                            <i data-lucide="trash-2" size="18"></i>
+                        </button>
+                    </td>
+                </tr>`;
+        }).join('');
+    
+    // Update tampilan total terkumpul di header tabungan
+    const totalDisplay = document.getElementById('saving-total-value');
+    if (totalDisplay) totalDisplay.innerText = `Rp ${total.toLocaleString('id-ID')}`;
+    
+    lucide.createIcons();
+};
 
         window.addSaving = async () => {
             const n = document.getElementById('inp-saver').value;
