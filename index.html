@@ -535,62 +535,44 @@ window.toggleItemStatus = async (id, currentStatus) => {
 
 window.addItem = async () => {
     const btn = document.getElementById('btn-add-item');
+    const fileInput = document.getElementById('inp-file');
     const n = document.getElementById('inp-name').value;
     const p = document.getElementById('inp-price').value;
     const l = document.getElementById('inp-link').value;
     const cat = document.getElementById('inp-cat').value;
-    const fileInput = document.getElementById('inp-file');
     
-    // Validasi Dasar: Nama tidak boleh kosong
-    if (!n) {
-        alert("Nama barang harus diisi!");
-        return;
-    }
-    
-    if (!currentUser) {
-        alert("Koneksi terputus, silakan refresh halaman.");
-        return;
-    }
+    if (!n) return alert("Nama barang wajib diisi!");
 
     btn.disabled = true;
     btn.innerHTML = '<div class="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></div>';
 
     try {
         let photoBase64 = "";
-        // Cek apakah ada file foto yang dipilih
-        if (fileInput && fileInput.files && fileInput.files[0]) {
-            try {
-                // Menggunakan fungsi compressImage yang sudah ada di kode Anda
-                photoBase64 = await compressImage(fileInput.files[0], 600, 0.4);
-            } catch (imgErr) {
-                console.warn("Gagal mengompres gambar, lanjut tanpa foto:", imgErr);
-            }
+        // Jika ada file, kompres lebih kecil (max 500px) agar pasti muat di database
+        if (fileInput.files && fileInput.files[0]) {
+            photoBase64 = await compressImage(fileInput.files[0], 500, 0.5); 
         }
 
         const { addDoc, collection } = await import("https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js");
-        
-        // Proses simpan ke Firestore
         await addDoc(collection(db, 'artifacts', appId, 'public', 'data', currentTab), { 
             name: n, 
             price: Number(p) || 0, 
             link: l || "", 
             category: currentTab === 'seserahan' ? cat : 'Umum',
-            photo: photoBase64, 
+            photo: photoBase64, // Data gambar yang sudah dikompres
             isDone: false,
             date: new Date().toISOString() 
         });
 
-        // Reset form setelah berhasil
+        // Reset form
         document.getElementById('inp-name').value = ''; 
         document.getElementById('inp-price').value = '';
         document.getElementById('inp-link').value = '';
-        if (fileInput) fileInput.value = ''; 
-        
-        alert("Data berhasil ditambahkan!");
+        fileInput.value = ''; 
 
     } catch (err) {
-        console.error("Error detail saat simpan:", err);
-        alert("Gagal menyimpan data. Pastikan koneksi internet stabil.");
+        console.error("Gagal simpan:", err);
+        alert("Gagal menyimpan. Pastikan ukuran foto tidak terlalu besar.");
     } finally {
         btn.disabled = false;
         btn.innerHTML = '<i data-lucide="plus" class="mr-2"></i> Tambah';
@@ -618,17 +600,21 @@ function renderInventory() {
                             ${item.isDone ? '<i data-lucide="check" size="14"></i>' : ''}
                         </button>
                     </td>
-                    <td class="px-6 py-5">
-                        <div class="flex items-center gap-3">
-                            <div onclick="${item.photo ? `showPreview('${item.photo}')` : ''}" class="w-12 h-12 rounded-lg bg-gray-100 flex-shrink-0 overflow-hidden border border-gray-100 cursor-pointer hover:opacity-80 transition-opacity">
-                                ${item.photo ? `<img src="${item.photo}" class="w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-gray-300"><i data-lucide="image" size="16"></i></div>`}
-                            </div>
-                            <div>
-                                <p class="font-bold text-gray-800 ${item.isDone ? 'line-through' : ''}">${item.name}</p>
-                                <p class="text-[10px] text-gray-400 font-bold uppercase">${item.category || 'Umum'}</p>
-                            </div>
-                        </div>
-                    </td>
+<td class="px-6 py-5">
+            <div class="flex items-center gap-3">
+                <div onclick="${item.photo ? `showPreview('${item.photo}')` : ''}" 
+                     class="w-12 h-12 rounded-lg bg-gray-100 flex-shrink-0 overflow-hidden border border-gray-100 cursor-pointer">
+                    ${item.photo 
+                        ? `<img src="${item.photo}" class="w-full h-full object-cover">` 
+                        : `<div class="w-full h-full flex items-center justify-center text-gray-300"><i data-lucide="image" size="16"></i></div>`
+                    }
+                </div>
+                <div>
+                    <p class="font-bold text-gray-800">${item.name}</p>
+                    <p class="text-[10px] text-gray-400 font-bold uppercase">${item.category || 'Umum'}</p>
+                </div>
+            </div>
+        </td>
                     <td class="px-6 py-5">
                         ${item.link ? `
                             <a href="${item.link.startsWith('http') ? item.link : 'https://' + item.link}" target="_blank" class="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-all text-xs font-bold border border-blue-100">
