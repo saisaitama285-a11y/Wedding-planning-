@@ -6,6 +6,7 @@
     <title>Wedding Planner Pro - Detail Rencana</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="birthday.css">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
     /* Modal Preview Foto */
@@ -313,6 +314,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
         import { getFirestore, doc, collection, setDoc, onSnapshot, addDoc, deleteDoc, query } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { initBirthdaySurprise } from './birthday.js';
 
         const firebaseConfig = {
             apiKey: "AIzaSyAJwuNmftdXJxZIwyQq1Cx64DC7Zm1zZ7M",
@@ -397,6 +399,12 @@
                     document.getElementById('user-status').innerText = `ID: ${user.uid.slice(0,8)}`;
                     initDatabase();
                     document.getElementById('loader').classList.add('hidden');
+                    initBirthdaySurprise(); 
+        // -------------------------------
+
+    } else {
+        // Jika tidak ada user, lempar ke login
+        window.location.href = 'login.html';
                 }
             });
         };
@@ -805,5 +813,43 @@ window.closePreview = () => {
         window.removeItem = async (id) => { await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', currentTab, id)); };
         window.toggleSidebar = () => { document.getElementById('sidebar').classList.toggle('-translate-x-full'); document.getElementById('sidebarOverlay').classList.toggle('hidden'); };
     </script>
+    <div id="birthday-trigger" class="fixed bottom-8 right-8 z-[10000] hidden">
+    <button onclick="openEnvelope()" class="bg-rose-500 text-white p-4 rounded-2xl shadow-2xl flex items-center gap-3 animate-bounce hover:scale-110 transition-transform">
+        <i data-lucide="mail"></i>
+        <span class="font-bold text-sm">Ada pesan untuk Shintya...</span>
+    </button>
+</div>
+    
+    <div id="birthday-modal" class="fixed inset-0 z-modal flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-[2.5rem] max-w-sm w-full overflow-hidden shadow-2xl animate-pop relative border border-rose-100">
+        <div class="p-8 text-center">
+            <div class="relative inline-block mb-6">
+                <div class="absolute inset-0 bg-rose-100 rounded-3xl rotate-6 float-animation"></div>
+                <img src="./IMG-20250627-WA0081.jpg" alt="Shintya" class="relative w-48 h-60 object-cover rounded-3xl shadow-md border-4 border-white">
+                <div class="absolute -top-3 -right-3 bg-rose-500 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg font-bold">21</div>
+            </div>
+
+            <h2 class="font-serif text-2xl font-bold text-gray-800 mb-1">Happy Birthday!</h2>
+            <p class="text-rose-500 font-bold text-lg mb-4">Shintya Choerunisa</p>
+            
+            <p class="text-gray-500 text-sm leading-relaxed mb-8 px-2">
+                "Barakallah fii umrik sayang, semoga di usia ke-21 ini kamu makin bahagia dan semua rencana kita kedepan dilancarkan Allah. ❤️"
+            </p>
+
+            <div class="space-y-3">
+                <a href="https://wa.me/6289520966316?text=Aamiin..%20Terima%20kasih%20banyak%20ya%20sayang!%20❤️" 
+                   class="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-4 rounded-2xl shadow-lg flex items-center justify-center gap-2 transition-transform active:scale-95">
+                    <i data-lucide="heart"></i> Balas ke WhatsApp
+                </a>
+                <button onclick="closeBirthdayModal()" class="text-gray-400 text-xs font-medium hover:text-rose-400 transition-colors">
+                    Tutup Kejutan
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<audio id="birthday-song" loop>
+    <source src="./happybirthday.mp3" type="audio/mpeg">
+</audio>
 </body>
 </html>
