@@ -2,10 +2,22 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wedding Planner Pro - Detail Rencana</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+    <title>WeddingPro - Pra-Nikah Planner</title>
+
+    <!-- PWA Support -->
+    <meta name="theme-color" content="#f43f5e">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="WeddingPro">
+    <meta name="description" content="Aplikasi perencana pra-nikah: checklist, seserahan, vendor, tabungan, dan kas.">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="icon-192.png">
+
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="birthday.css">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -27,27 +39,98 @@
     border-radius: 12px;
     box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
 }
-        body { font-family: 'Inter', sans-serif; }
+        :root {
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            overscroll-behavior-y: none;
+        }
         .font-serif { font-family: 'Playfair Display', serif; }
+
+        .sidebar-link { transition: all .2s ease; }
         .sidebar-link.active {
-            background-color: #f43f5e;
+            background: linear-gradient(135deg, #fb7185, #f43f5e);
             color: white;
-            box-shadow: 0 10px 15px -3px rgba(244, 63, 94, 0.2);
+            box-shadow: 0 10px 20px -6px rgba(244, 63, 94, 0.45);
         }
         .section-content { display: none; }
-        .section-content.active { display: block; }
+        .section-content.active {
+            display: block;
+            animation: fadeSlideIn .35s ease;
+        }
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
         .loading-overlay {
             position: fixed;
             inset: 0;
-            background: white;
+            background: linear-gradient(160deg, #fff1f2, #ffffff);
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 9999;
         }
-        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: #fb7185; border-radius: 10px; }
+
+        /* Kartu ringkasan anggaran di sidebar */
+        .budget-card {
+            background: linear-gradient(135deg, #fff1f2, #ffe4e6);
+        }
+
+        /* Header aplikasi (mobile app feel) */
+        header {
+            padding-top: calc(1rem + var(--safe-top));
+        }
+        aside#sidebar {
+            padding-top: var(--safe-top);
+        }
+
+        /* Tombol aksi utama dengan efek tekan ala aplikasi native */
+        button, a { -webkit-tap-highlight-color: transparent; }
+        .active\:scale-95:active { transform: scale(0.95); }
+
+        /* === TABEL RESPONSIF: berubah jadi kartu di layar kecil === */
+        @media (max-width: 767px) {
+            table.responsive-table thead { display: none; }
+            table.responsive-table, table.responsive-table tbody, table.responsive-table tr, table.responsive-table td {
+                display: block;
+                width: 100%;
+            }
+            table.responsive-table tr {
+                padding: 14px 16px;
+                border-bottom: 1px solid #f1f5f9;
+            }
+            table.responsive-table tr:hover { background: transparent !important; }
+            table.responsive-table td {
+                padding: 6px 0 !important;
+                border: none !important;
+            }
+            table.responsive-table td[data-label]:not([data-label=""])::before {
+                content: attr(data-label);
+                display: block;
+                font-size: 10px;
+                font-weight: 800;
+                text-transform: uppercase;
+                letter-spacing: .05em;
+                color: #94a3b8;
+                margin-bottom: 4px;
+            }
+            table.responsive-table td.td-empty::before { content: none; }
+        }
+
+        /* Tombol Install App */
+        #installBtn {
+            display: none;
+        }
+        #installBtn.show {
+            display: inline-flex;
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800">
@@ -62,13 +145,16 @@
     <div class="min-h-screen flex">
         <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 hidden lg:hidden" onclick="toggleSidebar()"></div>
 
-        <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 w-72 bg-white border-r border-gray-100 z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
+        <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 w-72 bg-white border-r border-gray-100 z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out shadow-2xl lg:shadow-none">
             <div class="p-6 h-full flex flex-col">
-                <div class="flex items-center gap-2 mb-10">
-                    <div class="bg-rose-500 p-2 rounded-lg text-white">
+                <div class="flex items-center gap-3 mb-10">
+                    <div class="bg-gradient-to-br from-rose-400 to-rose-600 p-2.5 rounded-2xl text-white shadow-lg shadow-rose-200">
                         <i data-lucide="heart" class="fill-current"></i>
                     </div>
-                    <h1 class="text-xl font-bold text-gray-800 font-serif">WeddingPro</h1>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-800 font-serif leading-tight">WeddingPro</h1>
+                        <p class="text-[11px] text-gray-400 font-medium tracking-wide">Pra-Nikah Planner</p>
+                    </div>
                 </div>
                 
                 <nav class="space-y-2 flex-1">
@@ -98,7 +184,11 @@
 </button>
                 </nav>
 
-                <div class="mt-auto p-4 bg-rose-50 rounded-2xl border border-rose-100">
+                <button id="installBtn" onclick="triggerInstall()" class="items-center justify-center gap-2 mb-3 w-full bg-gray-900 text-white text-xs font-bold py-3 rounded-xl hover:bg-gray-800 transition-all active:scale-95">
+                    <i data-lucide="download" size="16"></i> Install Aplikasi
+                </button>
+
+                <div class="mt-auto p-4 budget-card rounded-2xl border border-rose-100">
                     <p class="text-[10px] text-rose-400 font-bold uppercase tracking-wider mb-1 text-center">Estimasi Anggaran</p>
                     <p id="grand-total" class="text-lg font-bold text-rose-600 text-center">Rp 0</p>
                     <div class="mt-2 pt-2 border-t border-rose-200">
@@ -110,10 +200,10 @@
         </aside>
 
         <main class="flex-1 flex flex-col min-w-0 overflow-hidden">
-            <header class="bg-white/80 backdrop-blur-md border-b border-gray-100 px-6 py-4 flex items-center justify-between sticky top-0 z-30">
-                <div class="flex items-center gap-4">
-                    <button class="lg:hidden p-2 text-gray-500 hover:bg-gray-100 rounded-lg" onclick="toggleSidebar()"><i data-lucide="menu"></i></button>
-                    <h2 id="section-title" class="text-lg font-semibold text-gray-700">Checklist Persiapan</h2>
+            <header class="bg-white/80 backdrop-blur-md border-b border-gray-100 px-4 sm:px-6 py-4 flex items-center justify-between sticky top-0 z-30">
+                <div class="flex items-center gap-3">
+                    <button class="lg:hidden p-2 text-gray-500 hover:bg-rose-50 hover:text-rose-500 rounded-xl transition-colors" onclick="toggleSidebar()"><i data-lucide="menu"></i></button>
+                    <h2 id="section-title" class="text-base sm:text-lg font-bold text-gray-800 font-serif">Checklist Persiapan</h2>
                 </div>
                 <div id="user-status" class="hidden sm:block text-[10px] text-gray-400 font-mono bg-gray-50 px-3 py-1.5 rounded-full border">UID: ---</div>
             </header>
@@ -183,7 +273,7 @@
 </div>
 
     <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-        <table class="w-full text-left text-sm">
+        <table class="w-full text-left text-sm responsive-table">
            <thead class="bg-slate-50/50">
     <tr>
         <th class="px-6 py-5 font-bold text-gray-400 uppercase tracking-widest text-[10px] w-16">Beli</th>
@@ -211,24 +301,41 @@
                         </div>
                     </div>
 
-                    <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div class="space-y-1.5">
-                            <label class="text-[11px] font-bold text-gray-500 uppercase px-1">Nama Penabung</label>
-                            <input id="inp-saver" type="text" placeholder="Misal: Nama Pria / Wanita" class="w-full p-3.5 bg-slate-50 border-none rounded-2xl text-sm outline-none transition-all focus:ring-2 focus:ring-emerald-200">
-                        </div>
-                        <div class="space-y-1.5">
-                            <label class="text-[11px] font-bold text-gray-500 uppercase px-1">Jumlah Setoran (Rp)</label>
-                            <div class="flex gap-2">
-                                <input id="inp-save-amount" type="number" placeholder="0" class="flex-1 p-3.5 bg-slate-50 border-none rounded-2xl text-sm outline-none transition-all focus:ring-2 focus:ring-emerald-200">
-                                <button onclick="addSaving()" class="bg-emerald-500 text-white px-6 rounded-2xl hover:bg-emerald-600 transition-all active:scale-95 shadow-lg shadow-emerald-100">
-                                    <i data-lucide="plus"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+<div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div class="space-y-1.5">
+        <label class="text-[11px] font-bold text-gray-500 uppercase px-1">Nama Penabung</label>
+        <input id="inp-saver" type="text" placeholder="Nama..." class="w-full p-3 bg-slate-50 border-none rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-200">
+    </div>
+    <div class="space-y-1.5">
+        <label class="text-[11px] font-bold text-gray-500 uppercase px-1">Jenis</label>
+        <select id="inp-save-type" class="w-full p-3 bg-slate-50 border-none rounded-xl text-sm outline-none">
+            <option value="masuk">Setoran (+)</option>
+            <option value="keluar">Penarikan (-)</option>
+        </select>
+    </div>
+    <div class="space-y-1.5">
+        <label class="text-[11px] font-bold text-gray-500 uppercase px-1">Tanggal</label>
+        <input id="inp-save-date" type="date" class="w-full p-3 bg-slate-50 border-none rounded-xl text-sm outline-none">
+    </div>
+    <div class="space-y-1.5">
+        <label class="text-[11px] font-bold text-gray-500 uppercase px-1">Nominal (Rp)</label>
+        <div class="flex gap-2">
+            <input id="inp-save-amount" type="number" placeholder="0" class="flex-1 p-3 bg-slate-50 border-none rounded-xl text-sm outline-none">
+            <button onclick="addSaving()" class="bg-emerald-500 text-white px-5 rounded-xl hover:bg-emerald-600 transition-all active:scale-95 shadow-lg shadow-emerald-100">
+                <i data-lucide="plus"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="space-y-4">
+    <h4 class="text-xs font-bold text-gray-400 uppercase tracking-widest px-1">Rekapan Saldo Per Bulan</h4>
+    <div id="monthly-statement" class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        </div>
+</div>
 
                     <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-                        <table class="w-full text-left text-sm">
+                        <table class="w-full text-left text-sm responsive-table">
                             <thead class="bg-slate-50/50">
                                 <tr>
                                     <th class="px-6 py-5 font-bold text-gray-400 uppercase tracking-widest text-[10px]">Penyetor</th>
@@ -287,7 +394,7 @@
     </div>
 
     <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-        <table class="w-full text-left text-sm">
+        <table class="w-full text-left text-sm responsive-table">
             <thead class="bg-slate-50/50">
                 <tr>
                     <th class="px-6 py-5 font-bold text-gray-400 uppercase tracking-widest text-[10px]">Tanggal & Keterangan</th>
@@ -603,12 +710,12 @@ function renderInventory() {
             
             return `
                 <tr class="hover:bg-slate-50/50 transition-colors ${item.isDone ? 'opacity-60 bg-slate-50' : ''}">
-                    <td class="px-6 py-5">
+                    <td class="px-6 py-5" data-label="Beli">
                         <button onclick="toggleItemStatus('${item.id}', ${item.isDone})" class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${item.isDone ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-gray-200'}">
                             ${item.isDone ? '<i data-lucide="check" size="14"></i>' : ''}
                         </button>
                     </td>
-<td class="px-6 py-5">
+<td class="px-6 py-5" data-label="Detail Barang">
             <div class="flex items-center gap-3">
                 <div onclick="${item.photo ? `showPreview('${item.photo}')` : ''}" 
                      class="w-12 h-12 rounded-lg bg-gray-100 flex-shrink-0 overflow-hidden border border-gray-100 cursor-pointer">
@@ -623,17 +730,17 @@ function renderInventory() {
                 </div>
             </div>
         </td>
-                    <td class="px-6 py-5">
+                    <td class="px-6 py-5" data-label="Tautan">
                         ${item.link ? `
                             <a href="${item.link.startsWith('http') ? item.link : 'https://' + item.link}" target="_blank" class="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-all text-xs font-bold border border-blue-100">
                                 <i data-lucide="external-link" size="14"></i> Beli
                             </a>
                         ` : '<span class="text-gray-300 text-xs italic">Tanpa Link</span>'}
                     </td>
-                    <td class="px-6 py-5 font-mono font-bold text-gray-700">
+                    <td class="px-6 py-5 font-mono font-bold text-gray-700" data-label="Harga">
                         Rp ${(Number(item.price) || 0).toLocaleString('id-ID')}
                     </td>
-                    <td class="px-6 py-5 text-right">
+                    <td class="px-6 py-5 text-right" data-label="">
                         <button onclick="removeItem('${item.id}')" class="text-gray-300 hover:text-rose-500 transition-colors">
                             <i data-lucide="trash-2" size="18"></i>
                         </button>
@@ -647,56 +754,70 @@ function renderInventory() {
 
         window.renderSavings = () => {
     const list = data.tabungan || [];
-    // Urutkan berdasarkan tanggal terbaru
     list.sort((a, b) => new Date(b.date) - new Date(a.date));
     
     const tbody = document.getElementById('savings-table-body');
+    const statementDiv = document.getElementById('monthly-statement'); // Elemen baru untuk rekapan
     let total = 0;
+    let monthlyData = {};
 
-    tbody.innerHTML = list.length === 0 ? 
-        '<tr><td colspan="3" class="p-10 text-center text-gray-400 italic">Belum ada catatan tabungan.</td></tr>' : 
-        list.map(item => {
-            const nominal = Number(item.price) || 0;
-            total += nominal;
-            
-            return `
-                <tr class="hover:bg-slate-50/50 transition-colors">
-                    <td class="px-6 py-5">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                                <i data-lucide="user" size="18"></i>
-                            </div>
-                            <div>
-                                <p class="font-bold text-gray-800">${item.name}</p>
-                                <p class="text-[10px] text-gray-400 font-bold uppercase">${item.date ? new Date(item.date).toLocaleDateString('id-ID') : '-'}</p>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="px-6 py-5 font-mono font-bold text-emerald-600">
-                        Rp ${nominal.toLocaleString('id-ID')}
-                    </td>
-                    <td class="px-6 py-5 text-right">
-                        <button onclick="removeItem('${item.id}')" class="text-gray-300 hover:text-rose-500 transition-colors p-2">
-                            <i data-lucide="trash-2" size="18"></i>
-                        </button>
-                    </td>
-                </tr>`;
-        }).join('');
-    
-    // Update tampilan total terkumpul di header tabungan
-    const totalDisplay = document.getElementById('saving-total-value');
-    if (totalDisplay) totalDisplay.innerText = `Rp ${total.toLocaleString('id-ID')}`;
-    
+    // Render Tabel Transaksi
+    tbody.innerHTML = list.map(item => {
+        const isKeluar = item.price < 0;
+        total += item.price;
+        
+        // Logika Rekapan Bulanan
+        const monthKey = new Date(item.date).toLocaleString('id-ID', { month: 'long', year: 'numeric' });
+        if (!monthlyData[monthKey]) monthlyData[monthKey] = 0;
+        monthlyData[monthKey] += item.price;
+
+        return `
+            <tr class="hover:bg-slate-50/50">
+                <td class="px-6 py-5" data-label="Penyetor">
+                    <p class="font-bold text-gray-800">${item.name}</p>
+                    <p class="text-[10px] text-gray-400 font-bold uppercase">${item.date}</p>
+                </td>
+                <td class="px-6 py-5 font-mono font-bold ${isKeluar ? 'text-rose-500' : 'text-emerald-600'}" data-label="Nominal">
+                    ${isKeluar ? '-' : '+'} Rp ${Math.abs(item.price).toLocaleString('id-ID')}
+                </td>
+                <td class="px-6 py-5 text-right" data-label="">
+                    <button onclick="removeItem('${item.id}')" class="text-gray-300 hover:text-rose-500 p-2"><i data-lucide="trash-2" size="18"></i></button>
+                </td>
+            </tr>`;
+    }).join('');
+
+    // Render Rekapan Bulanan ke UI
+    statementDiv.innerHTML = Object.entries(monthlyData).map(([month, sum]) => `
+        <div class="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+            <span class="text-xs font-bold text-gray-500 uppercase">${month}</span>
+            <span class="font-mono font-bold ${sum < 0 ? 'text-rose-500' : 'text-emerald-600'}">Rp ${sum.toLocaleString('id-ID')}</span>
+        </div>
+    `).join('');
+
+    document.getElementById('saving-total-value').innerText = `Rp ${total.toLocaleString('id-ID')}`;
     lucide.createIcons();
 };
 
         window.addSaving = async () => {
-            const n = document.getElementById('inp-saver').value;
-            const p = document.getElementById('inp-save-amount').value;
-            if (!n || !p || !currentUser) return;
-            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'tabungan'), { name: n, price: Number(p) || 0, date: new Date().toISOString() });
-            document.getElementById('inp-saver').value = ''; document.getElementById('inp-save-amount').value = '';
-        };
+    const n = document.getElementById('inp-saver').value;
+    const p = document.getElementById('inp-save-amount').value;
+    const type = document.getElementById('inp-save-type').value; // Ambil dari select baru
+    const date = document.getElementById('inp-save-date').value || new Date().toISOString().split('T')[0];
+    
+    if (!n || !p || !currentUser) return alert("Isi nama dan nominal!");
+    
+    // Jika jenisnya 'keluar', simpan sebagai angka negatif untuk memudahkan perhitungan total
+    const finalPrice = type === 'keluar' ? -Math.abs(Number(p)) : Math.abs(Number(p));
+
+    await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'tabungan'), { 
+        name: n, 
+        price: finalPrice, 
+        type: type,
+        date: date 
+    });
+    
+    document.getElementById('inp-save-amount').value = '';
+};
         // Fungsi mengubah file gambar menjadi string teks (Base64)
 const toBase64 = file => new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -765,7 +886,7 @@ window.renderKas = () => {
 
         return `
             <tr class="hover:bg-slate-50/50">
-                <td class="px-6 py-5">
+                <td class="px-6 py-5" data-label="Tanggal & Keterangan">
                     <div class="text-[10px] text-gray-400 font-bold uppercase mb-0.5">${item.date || '-'}</div>
                     <div class="font-semibold text-gray-800 flex items-center gap-2">
                         ${item.name}
@@ -775,15 +896,15 @@ window.renderKas = () => {
                             </button>` : ''}
                     </div>
                 </td>
-                <td class="px-6 py-5">
+                <td class="px-6 py-5" data-label="Jenis">
                     <span class="px-2 py-1 rounded-md text-[10px] font-bold uppercase ${isMasuk ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600'}">
                         ${item.type}
                     </span>
                 </td>
-                <td class="px-6 py-5 font-mono font-bold ${isMasuk ? 'text-emerald-600' : 'text-rose-600'}">
+                <td class="px-6 py-5 font-mono font-bold ${isMasuk ? 'text-emerald-600' : 'text-rose-600'}" data-label="Nominal">
                     ${isMasuk ? '+' : '-'} Rp ${item.price.toLocaleString('id-ID')}
                 </td>
-                <td class="px-6 py-5 text-right">
+                <td class="px-6 py-5 text-right" data-label="">
                     <button onclick="removeItem('${item.id}')" class="text-gray-200 hover:text-rose-500 p-2"><i data-lucide="trash-2" size="18"></i></button>
                 </td>
             </tr>`;
@@ -851,5 +972,35 @@ window.closePreview = () => {
 <audio id="birthday-song" loop>
     <source src="./happybirthday.mp3" type="audio/mpeg">
 </audio>
+
+<script>
+    // ==== PWA: Service Worker + Tombol Install ====
+    let deferredInstallPrompt = null;
+
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js').catch(err => console.warn('SW gagal daftar:', err));
+        });
+    }
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredInstallPrompt = e;
+        const btn = document.getElementById('installBtn');
+        if (btn) btn.classList.add('show');
+    });
+
+    window.triggerInstall = async () => {
+        if (!deferredInstallPrompt) return;
+        deferredInstallPrompt.prompt();
+        await deferredInstallPrompt.userChoice;
+        deferredInstallPrompt = null;
+        document.getElementById('installBtn')?.classList.remove('show');
+    };
+
+    window.addEventListener('appinstalled', () => {
+        document.getElementById('installBtn')?.classList.remove('show');
+    });
+</script>
 </body>
 </html>
