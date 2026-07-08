@@ -1,0 +1,9 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "app.vercel.wedding_planning_rouge.twa",
+        "sha256_cert_fingerprints": ["39:51:2A:FC:10:F1:8D:93:68:F4:27:77:16:53:5E:0B:24:D8:95:44:C3:45:B2:1F:88:1A:D1:C7:53:41:AF:4C"]
+      }
+    }]
+
