@@ -182,6 +182,10 @@
     <i data-lucide="arrow-up-down"></i>
     <span class="font-medium">Kas Masuk/Keluar</span>
 </button>
+                    <button onclick="switchTab('tamu')" id="btn-tamu" class="sidebar-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-gray-500 hover:bg-rose-50 hover:text-rose-600">
+    <i data-lucide="users"></i>
+    <span class="font-medium">Daftar Tamu</span>
+</button>
                 </nav>
 
                 <button id="installBtn" onclick="triggerInstall()" class="items-center justify-center gap-2 mb-3 w-full bg-gray-900 text-white text-xs font-bold py-3 rounded-xl hover:bg-gray-800 transition-all active:scale-95">
@@ -407,6 +411,102 @@
         </table>
     </div>
 </div>
+
+<div id="section-tamu" class="section-content max-w-5xl mx-auto space-y-8">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div>
+            <h3 class="text-2xl font-bold text-gray-800 font-serif">Daftar Tamu Undangan</h3>
+            <p class="text-sm text-gray-500">Catat nama tamu, nomor WA, dan pihak yang mengundang.</p>
+        </div>
+    </div>
+
+    <!-- Kartu Ringkasan -->
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+            <div class="p-3 bg-purple-50 text-purple-500 rounded-xl"><i data-lucide="users"></i></div>
+            <div>
+                <p class="text-[10px] font-bold text-gray-400 uppercase">Total Tamu</p>
+                <p id="tamu-total-value" class="text-2xl font-bold text-purple-600">0</p>
+            </div>
+        </div>
+        <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+            <div class="p-3 bg-blue-50 text-blue-500 rounded-xl"><i data-lucide="user"></i></div>
+            <div>
+                <p class="text-[10px] font-bold text-gray-400 uppercase">Pihak Pria</p>
+                <p id="tamu-pria-value" class="text-2xl font-bold text-blue-600">0</p>
+            </div>
+        </div>
+        <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4 col-span-2 md:col-span-1">
+            <div class="p-3 bg-rose-50 text-rose-500 rounded-xl"><i data-lucide="user"></i></div>
+            <div>
+                <p class="text-[10px] font-bold text-gray-400 uppercase">Pihak Wanita</p>
+                <p id="tamu-wanita-value" class="text-2xl font-bold text-rose-600">0</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pengaturan Undangan (Link + Template Pesan WA) -->
+    <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm space-y-4">
+        <div class="flex items-center gap-2">
+            <div class="p-2 bg-emerald-50 text-emerald-500 rounded-lg"><i data-lucide="link" size="18"></i></div>
+            <h4 class="font-bold text-gray-700">Pengaturan Undangan WhatsApp</h4>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="space-y-1.5">
+                <label class="text-[11px] font-bold text-gray-500 uppercase px-1">Link Undangan Digital</label>
+                <input id="inp-undangan-link" type="url" placeholder="https://undangan.com/nama-kalian" class="w-full p-3 bg-slate-50 border-none rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-200">
+            </div>
+            <div class="space-y-1.5">
+                <label class="text-[11px] font-bold text-gray-500 uppercase px-1">Template Pesan (gunakan {nama} & {link})</label>
+                <input id="inp-undangan-pesan" type="text" placeholder="Halo {nama}, kami mengundang..." class="w-full p-3 bg-slate-50 border-none rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-200">
+            </div>
+        </div>
+        <button onclick="saveUndanganSettings()" id="btn-save-undangan" class="bg-emerald-500 text-white text-sm font-bold px-5 py-3 rounded-xl hover:bg-emerald-600 transition-all active:scale-95 flex items-center gap-2">
+            <i data-lucide="save" size="16"></i> Simpan Pengaturan
+        </button>
+        <p class="text-xs text-gray-400">Contoh template: <em>"Assalamualaikum {nama}, kami mengundang kehadiran Anda di pernikahan kami. Detail acara: {link}"</em></p>
+    </div>
+
+    <!-- Form Tambah Tamu -->
+    <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="space-y-1.5">
+            <label class="text-[11px] font-bold text-gray-500 uppercase px-1">Nama Tamu</label>
+            <input id="inp-tamu-nama" type="text" placeholder="Nama tamu..." class="w-full p-3 bg-slate-50 border-none rounded-xl text-sm outline-none focus:ring-2 focus:ring-purple-200">
+        </div>
+        <div class="space-y-1.5">
+            <label class="text-[11px] font-bold text-gray-500 uppercase px-1">Nomor WA</label>
+            <input id="inp-tamu-wa" type="tel" placeholder="08xxxxxxxxxx" class="w-full p-3 bg-slate-50 border-none rounded-xl text-sm outline-none focus:ring-2 focus:ring-purple-200">
+        </div>
+        <div class="space-y-1.5">
+            <label class="text-[11px] font-bold text-gray-500 uppercase px-1">Pihak</label>
+            <select id="inp-tamu-pihak" class="w-full p-3 bg-slate-50 border-none rounded-xl text-sm outline-none">
+                <option value="pria">Pihak Pria</option>
+                <option value="wanita">Pihak Wanita</option>
+            </select>
+        </div>
+        <div class="space-y-1.5 flex items-end">
+            <button onclick="addTamu()" id="btn-add-tamu" class="w-full bg-purple-500 text-white h-[46px] rounded-xl hover:bg-purple-600 flex items-center justify-center shadow-lg shadow-purple-100 transition-all active:scale-95">
+                <i data-lucide="plus" class="mr-2"></i> Tambah Tamu
+            </button>
+        </div>
+    </div>
+
+    <!-- Tabel Tamu -->
+    <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+        <table class="w-full text-left text-sm responsive-table">
+            <thead class="bg-slate-50/50">
+                <tr>
+                    <th class="px-6 py-5 font-bold text-gray-400 uppercase tracking-widest text-[10px]">Nama</th>
+                    <th class="px-6 py-5 font-bold text-gray-400 uppercase tracking-widest text-[10px]">No. WA</th>
+                    <th class="px-6 py-5 font-bold text-gray-400 uppercase tracking-widest text-[10px]">Pihak</th>
+                    <th class="px-6 py-5 font-bold text-gray-400 uppercase tracking-widest text-[10px]">Status Undangan</th>
+                    <th class="px-6 py-5 font-bold text-gray-400 uppercase tracking-widest text-[10px] text-right">Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="tamu-table-body" class="divide-y divide-gray-50"></tbody>
+        </table>
+    </div>
+</div>
         </main>
     </div>
 <div id="modal-photo" class="modal-photo" onclick="closePreview()">
@@ -439,7 +539,7 @@
 
         let currentUser = null;
         let currentTab = 'checklist';
-      let data = { seserahan: [], vendor: [], prabotan: [], tabungan: [], checklist: {}, kas: [] }; 
+      let data = { seserahan: [], vendor: [], prabotan: [], tabungan: [], checklist: {}, kas: [], tamu: [], settingsUndangan: { link: '', message: '' } };
 
         const timeline = [
     {
@@ -522,13 +622,22 @@
         if (currentTab === 'checklist') renderChecklist();
     });
 
-    ['seserahan', 'vendor', 'prabotan', 'tabungan', 'kas'].forEach(col => {
+    onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'undangan'), snap => {
+        data.settingsUndangan = snap.exists() ? snap.data() : { link: '', message: '' };
+        const linkInput = document.getElementById('inp-undangan-link');
+        const pesanInput = document.getElementById('inp-undangan-pesan');
+        if (linkInput && document.activeElement !== linkInput) linkInput.value = data.settingsUndangan.link || '';
+        if (pesanInput && document.activeElement !== pesanInput) pesanInput.value = data.settingsUndangan.message || '';
+    });
+
+    ['seserahan', 'vendor', 'prabotan', 'tabungan', 'kas', 'tamu'].forEach(col => {
         onSnapshot(query(collection(db, 'artifacts', appId, 'public', 'data', col)), snap => {
             data[col] = snap.docs.map(d => ({ id: d.id, ...d.data() }));
             
             // Trigger render sesuai tab yang aktif
             if (currentTab === 'kas') renderKas();
             if (currentTab === 'tabungan') renderSavings();
+            if (currentTab === 'tamu') renderTamu();
             if (['seserahan', 'vendor', 'prabotan'].includes(currentTab)) renderInventory();
             
             updateTotals();
@@ -553,7 +662,8 @@
         vendor: 'Daftar Vendor', 
         prabotan: 'Isi Rumah', 
         tabungan: 'Tabungan Bersama', 
-        kas: 'Arus Kas' 
+        kas: 'Arus Kas',
+        tamu: 'Daftar Tamu Undangan'
     };
     document.getElementById('section-title').innerText = titles[tabId];
     
@@ -567,6 +677,11 @@
     } else if (tabId === 'tabungan') {
         document.getElementById('section-tabungan').classList.add('active');
         renderSavings();
+    } else if (tabId === 'tamu') {
+        document.getElementById('section-tamu').classList.add('active');
+        document.getElementById('inp-undangan-link').value = data.settingsUndangan.link || '';
+        document.getElementById('inp-undangan-pesan').value = data.settingsUndangan.message || '';
+        renderTamu();
     } else {
         // Ini hanya untuk seserahan, vendor, dan prabotan
         document.getElementById('section-inventory').classList.add('active');
@@ -818,6 +933,139 @@ function renderInventory() {
     
     document.getElementById('inp-save-amount').value = '';
 };
+
+        // ===================== FITUR DAFTAR TAMU UNDANGAN =====================
+
+        // Normalisasi nomor WA ke format internasional (62xxx) tanpa spasi/simbol
+        function normalizePhone(raw) {
+            let p = (raw || '').replace(/[^0-9+]/g, '');
+            p = p.replace(/^\+/, '');
+            if (p.startsWith('0')) p = '62' + p.slice(1);
+            if (!p.startsWith('62')) p = '62' + p;
+            return p;
+        }
+
+        window.addTamu = async () => {
+    const btn = document.getElementById('btn-add-tamu');
+    const nama = document.getElementById('inp-tamu-nama').value.trim();
+    const wa = document.getElementById('inp-tamu-wa').value.trim();
+    const pihak = document.getElementById('inp-tamu-pihak').value;
+
+    if (!nama || !wa) return alert("Nama dan Nomor WA wajib diisi!");
+
+    btn.disabled = true;
+    btn.innerHTML = '<div class="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></div>';
+
+    try {
+        await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'tamu'), {
+            name: nama,
+            phone: normalizePhone(wa),
+            pihak: pihak,
+            sent: false,
+            date: new Date().toISOString()
+        });
+
+        document.getElementById('inp-tamu-nama').value = '';
+        document.getElementById('inp-tamu-wa').value = '';
+    } catch (err) {
+        console.error("Gagal simpan tamu:", err);
+        alert("Terjadi kesalahan saat menyimpan data tamu.");
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i data-lucide="plus" class="mr-2"></i> Tambah Tamu';
+        lucide.createIcons();
+    }
+};
+
+window.renderTamu = () => {
+    const list = data.tamu || [];
+    const tbody = document.getElementById('tamu-table-body');
+
+    const totalPria = list.filter(t => t.pihak === 'pria').length;
+    const totalWanita = list.filter(t => t.pihak === 'wanita').length;
+    document.getElementById('tamu-total-value').innerText = list.length;
+    document.getElementById('tamu-pria-value').innerText = totalPria;
+    document.getElementById('tamu-wanita-value').innerText = totalWanita;
+
+    tbody.innerHTML = list.length === 0 ? '<tr><td colspan="5" class="p-10 text-center text-gray-400 italic">Belum ada tamu ditambahkan.</td></tr>' : list.map(item => {
+        const isPria = item.pihak === 'pria';
+        return `
+            <tr class="hover:bg-slate-50/50">
+                <td class="px-6 py-5" data-label="Nama">
+                    <p class="font-bold text-gray-800">${item.name}</p>
+                </td>
+                <td class="px-6 py-5 font-mono text-gray-600" data-label="No. WA">${item.phone}</td>
+                <td class="px-6 py-5" data-label="Pihak">
+                    <span class="px-2 py-1 rounded-md text-[10px] font-bold uppercase ${isPria ? 'bg-blue-100 text-blue-600' : 'bg-rose-100 text-rose-600'}">
+                        ${isPria ? 'Pria' : 'Wanita'}
+                    </span>
+                </td>
+                <td class="px-6 py-5" data-label="Status Undangan">
+                    <button onclick="toggleTamuSent('${item.id}', ${item.sent})" class="px-2 py-1 rounded-md text-[10px] font-bold uppercase transition-all ${item.sent ? 'bg-emerald-100 text-emerald-600' : 'bg-gray-100 text-gray-400'}">
+                        ${item.sent ? '✓ Terkirim' : 'Belum Kirim'}
+                    </button>
+                </td>
+                <td class="px-6 py-5 text-right" data-label="">
+                    <div class="flex items-center justify-end gap-1">
+                        <button onclick="sendInvite('${item.id}')" title="Kirim Undangan via WA" class="text-emerald-500 hover:text-emerald-700 p-2">
+                            <i data-lucide="send" size="18"></i>
+                        </button>
+                        <button onclick="removeItem('${item.id}')" class="text-gray-300 hover:text-rose-500 p-2"><i data-lucide="trash-2" size="18"></i></button>
+                    </div>
+                </td>
+            </tr>`;
+    }).join('');
+
+    lucide.createIcons();
+};
+
+window.toggleTamuSent = async (id, current) => {
+    const { updateDoc, doc } = await import("https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js");
+    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'tamu', id), { sent: !current });
+};
+
+window.saveUndanganSettings = async () => {
+    const btn = document.getElementById('btn-save-undangan');
+    const link = document.getElementById('inp-undangan-link').value.trim();
+    const message = document.getElementById('inp-undangan-pesan').value.trim();
+
+    btn.disabled = true;
+    try {
+        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'undangan'), { link, message });
+        btn.innerHTML = '<i data-lucide="check" size="16"></i> Tersimpan!';
+        lucide.createIcons();
+        setTimeout(() => {
+            btn.innerHTML = '<i data-lucide="save" size="16"></i> Simpan Pengaturan';
+            lucide.createIcons();
+        }, 1500);
+    } catch (err) {
+        console.error("Gagal simpan pengaturan undangan:", err);
+        alert("Gagal menyimpan pengaturan.");
+    } finally {
+        btn.disabled = false;
+    }
+};
+
+// Kirim undangan: buka WhatsApp dengan pesan + link undangan sudah terisi otomatis
+window.sendInvite = (id) => {
+    const tamu = (data.tamu || []).find(t => t.id === id);
+    if (!tamu) return;
+
+    const link = data.settingsUndangan?.link || '';
+    let template = data.settingsUndangan?.message || 'Assalamualaikum {nama}, kami mengundang kehadiran Anda di acara pernikahan kami. Berikut link undangannya: {link}';
+
+    if (!link) {
+        alert("Isi dulu 'Link Undangan Digital' di Pengaturan Undangan sebelum mengirim.");
+        return;
+    }
+
+    const pesan = template.replaceAll('{nama}', tamu.name).replaceAll('{link}', link);
+    const url = `https://wa.me/${tamu.phone}?text=${encodeURIComponent(pesan)}`;
+    window.open(url, '_blank');
+};
+
+        // ================== AKHIR FITUR DAFTAR TAMU UNDANGAN ==================
+
         // Fungsi mengubah file gambar menjadi string teks (Base64)
 const toBase64 = file => new Promise((resolve, reject) => {
     const reader = new FileReader();
